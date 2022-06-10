@@ -1,10 +1,10 @@
 const express = require("express");
+const userService = require("../services/userService");
 
 const router = express.Router();
 
 router.get("/signin", (req, res) => {
-  console.log(req);
-  res.statusCode(200);
+  userService.registerUser("Values");
   res.send();
 });
 
