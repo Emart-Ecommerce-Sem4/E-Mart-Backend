@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
-const userController = require("./src/controllers/logController");
+const userController = require("./src/controllers/userController");
 const pool = require("./src/configs/database.conf");
 
 const app = express();
