@@ -8,7 +8,9 @@ const pool = new Pool({
   port: process.env.DATABASE_PORT,
   host: process.env.DATABASE_HOST,
   ssl: {
+   
     ca: fs.readFileSync(__dirname + "/ssl/certificate.crt.pem"),
+  
   },
 });
 
