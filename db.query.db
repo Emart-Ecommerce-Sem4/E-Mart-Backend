@@ -1,12 +1,112 @@
-CREATE TABLE customer (customer_id VARCHAR(20) NOT NULL,
-                       user_id INTEGER PRIMARY KEY,
+CREATE TABLE customer (
+                       user_id VARCHAR(50) PRIMARY KEY,
+                       first_name VARCHAR(255) NOT NULL, 
+                       last_name VARCHAR(255) NOT NULL,
+                       birthday DATE NOT NULL,
+                       phone_number VARCHAR(20) NOT NULL,
+                       address VARCHAR(255) NOT NULL,
+                       
+                       city VARCHAR(255) NOT NULL,
+                       state state_type DEFAULT 'accepted' NOT NULL,
+                      
+                    FOREIGN KEY (user_id)
+                        REFERENCES user_account (user_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+);
+CREATE TYPE user_type AS ENUM('customer', 'admin');
+CREATE TYPE order_status_type AS ENUM('pending', 'admin');
+CREATE TYPE state_type AS ENUM('accepted', 'declined'); 
+
+
+CREATE TABLE  user_account (
+    user_id VARCHAR(50) PRIMARY KEY ,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    user_role user_type
+);
+CREATE TABLE admin (
+                       user_id VARCHAR(50) PRIMARY KEY,
                        first_name VARCHAR(255) NOT NULL, 
                        last_name VARCHAR(255) NOT NULL,
                        birthday DATE NOT NULL,
                        phone_number VARCHAR(20) NOT NULL,
                        address VARCHAR(255) NOT NULL,
                        email VARCHAR(255) NOT NULL,
-                       city VARCHAR(255) NOT NULL,
-                       state VARCHAR(255) NOT NULL);
+                       
+                       state state_type DEFAULT 'accepted' NOT NULL,
                       
-CREATE TABLE 
+                    FOREIGN KEY (user_id)
+                        REFERENCES user_account (user_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+);
+CREATE TABLE  product (
+    product_id VARCHAR(50) PRIMARY KEY ,
+    name VARCHAR(50) NOT NULL,
+    description VARCHAR(255) ,
+    category_id VARCHAR(20) NOT NULL,
+    quantity_in_stock INTEGER NOT NULL,
+    unit_price DECIMAL(100, 2),
+    variant_id VARCHAR(20) NOT NULL,
+    FOREIGN KEY (category_id)
+                        REFERENCES category (category_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,
+    FOREIGN KEY (variant_id)
+                        REFERENCES variant (variant_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+);
+CREATE TABLE  category(
+    category_id VARCHAR(50) PRIMARY KEY ,
+    category_name VARCHAR(50) NOT NULL  
+);
+CREATE TABLE  variant(
+    variant_id VARCHAR(50) PRIMARY KEY ,
+    variant_type VARCHAR(50) NOT NULL  
+);
+
+CREATE TABLE product_review (
+                       review_id VARCHAR(50) PRIMARY KEY,
+                       user_id VARCHAR(50) NOT NULL, 
+                       product_id VARCHAR(50) NOT NULL,
+                       rating INTEGER NOT NULL,
+                       
+                       description VARCHAR(255) NOT NULL,
+                       
+                       
+                       
+                      
+                    FOREIGN KEY (user_id)
+                        REFERENCES user_account (user_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,
+                       
+                    FOREIGN KEY (product_id)
+                        REFERENCES product (product_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+);
+
+CREATE TABLE order (
+                       order_id VARCHAR(50) PRIMARY KEY,
+                       user_id VARCHAR(50) NOT NULL, 
+                       order_date DATE NOT NULL,
+                       rating INTEGER NOT NULL,
+                       order_status 
+                       description VARCHAR(255) NOT NULL,
+                       
+                       
+                       
+                      
+                    FOREIGN KEY (user_id)
+                        REFERENCES user_account (user_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,
+                       
+                    FOREIGN KEY (product_id)
+                        REFERENCES product (product_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+);
