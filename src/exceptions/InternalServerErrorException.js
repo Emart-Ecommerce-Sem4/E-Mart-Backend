@@ -5,3 +5,5 @@ class InternalServerErrorException extends Error {
     this.message = 500;
   }
 }
+
+module.exports = { InternalServerErrorException };
