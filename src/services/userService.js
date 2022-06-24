@@ -5,8 +5,10 @@ const jwt = require("jsonwebtoken");
 
 const userRespository = require("../repositories/userRepository");
 const generateOutput = require("../utils/outputFactory");
-const res = require("express/lib/response");
-const {InternalServerErrorException} = require("../exceptions/InternalServerErrorException")
+const {
+  InternalServerErrorException,
+} = require("../exceptions/InternalServerErrorException");
+
 function generateAccessToken(userObj) {
   return jwt.sign(userObj, process.env.TOKEN_SECRET, {
     expiresIn: process.env.TOKEN_EXPIRE_TIME,
@@ -19,16 +21,15 @@ const signInSchema = yup.object().shape({
 const signUpSchema = yup.object().shape({
   first_name: yup.string().required(),
   last_name: yup.string().required(),
-  birthday:yup.date().required(),
-  phone_number:yup.string().required(),
-  address:yup.string().required(),
+  birthday: yup.date().required(),
+  phone_number: yup.string().required(),
+  address: yup.string().required(),
   email: yup.string().email().required(),
-  city:yup.string().required(),
+  city: yup.string().required(),
   password: yup.string().required().min(8).max(15),
-  
 });
 
-async function signin(email,password){
+async function signin(email, password) {
   var res = null;
   try {
     await signInSchema.validate({ email: email, password: password });
@@ -42,47 +43,38 @@ async function signin(email,password){
     }
     const user = res.rows[0];
     return new Promise((resolve, reject) => {
-      console.log(password)
+      console.log(password);
       bcrypt.compare(password, user.password, async (err, isMatch) => {
         if (err) {
           generateOutput(
             400,
             "Error in signining the user",
             "An error occured!"
-          )
+          );
         }
         if (isMatch) {
           const userObj = { ...user };
           delete userObj.password;
           resolve(
             generateOutput(200, "User succesfully signin!", {
-              user: { ...userObj  },
+              user: { ...userObj },
               token: generateAccessToken(user),
             })
           );
-          
-           
         } else {
           return generateOutput(
             400,
             "Entered  Email or Password is Incorrect",
-            "Entered  Email or Password is Incorrect",
-            
+            "Entered  Email or Password is Incorrect"
           );
         }
       });
-    })
-
-
+    });
   } catch (error) {
     console.log(error);
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
-      return generateOutput(
-        500,
-        "Error in getting the user",
-        error.message
-      );
+      return generateOutput(500, "Error in getting the user", error.message);
     }
     return generateOutput(
       400,
@@ -92,22 +84,18 @@ async function signin(email,password){
   }
 }
 
-
-
 async function registerUser(values) {
-
   try {
     await signUpSchema.validate({
       first_name: values.first_name,
       last_name: values.last_name,
       birthday: values.birthday,
       phone_number: values.phone_number,
-      address:values.address,
+      address: values.address,
       email: values.email,
-      city:values.city,
-      password:values.password
+      city: values.city,
+      password: values.password,
     });
-    
   } catch (error) {
     return generateOutput(400, "Validation error", error.message);
   }
@@ -133,7 +121,6 @@ async function registerUser(values) {
   }
   const id = uuid.v4();
   return new Promise((resolve, reject) => {
-  
     bcrypt.genSalt(10, async (err, salt) => {
       if (err) {
         resolve(
@@ -160,10 +147,10 @@ async function registerUser(values) {
             last_name: values.last_name,
             birthday: values.birthday,
             phone_number: values.phone_number,
-            address:values.address,
+            address: values.address,
             email: values.email,
-            city:values.city,
-            password:hash
+            city: values.city,
+            password: hash,
           };
           try {
             await userRespository.registerUser(user);
@@ -185,11 +172,7 @@ async function registerUser(values) {
               );
             }
             resolve(
-              generateOutput(
-                400,
-                "Error in registering the user",
-                " occured!"
-              )
+              generateOutput(400, "Error in registering the user", " occured!")
             );
           }
         });
@@ -198,4 +181,4 @@ async function registerUser(values) {
   });
 }
 
-module.exports = { registerUser,signin };
+module.exports = { registerUser, signin };

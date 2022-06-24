@@ -45,10 +45,10 @@ CREATE TABLE  product (
     product_id VARCHAR(50) PRIMARY KEY ,
     name VARCHAR(50) NOT NULL,
     description VARCHAR(255) ,
-    category_id VARCHAR(20) NOT NULL,
+    category_id VARCHAR(36) NOT NULL,
     quantity_in_stock INTEGER NOT NULL,
     unit_price DECIMAL(100, 2),
-    variant_id VARCHAR(20) NOT NULL,
+    variant_id VARCHAR(36) NOT NULL,
     FOREIGN KEY (category_id)
                         REFERENCES category (category_id)
                         ON DELETE CASCADE
