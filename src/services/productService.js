@@ -44,5 +44,44 @@ async function addProduct(values) {
     );
   }
 }
+async function updateProduct(values) {
+  try {
+    await productAddSchema.validate({ ...values });
+  } catch (error) {
+    return generateOutput(400, "Validation error", error.message);
+  }
+  try {
+    const reslt= await productRepository.getProductById(values.productId)
+    if (reslt.rowCount == 0) {
+      return generateOutput(400, "product not exist exists");
+    }
+  } catch (error) {
+    if (error instanceof InternalServerErrorException) {
+      // Internal server error exception
+      return generateOutput(500, "Error in updating the product", error.message);
+    }
+   
+    return generateOutput(
+      400,
+      "Error in updating the product",
+      "An error occured!"
+    );
+  }
+  try {
+    const result = await productRepository.updateProduct(values);
+    return generateOutput(201, "Product Updated Succesfully", values);
+  } catch (error) {
+    if (error instanceof InternalServerErrorException) {
+      // Internal server error exception
 
-module.exports = { addProduct };
+      return generateOutput(500, "Error in updating the product", error.message);
+    }
+    console.log(error);
+    return generateOutput(
+      400,
+      "Error in updating the product",
+      "An error occured!"
+    );
+  }
+}
+module.exports = { addProduct,updateProduct };

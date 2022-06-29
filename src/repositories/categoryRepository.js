@@ -62,10 +62,24 @@ async function deleteCategory(id) {
   }
 }
 
+
+async function updateCategory(values) {
+  try {
+    const res = await pool.query(
+      "UPDATE category SET category_name=$1 WHERE category_id=$2 ",
+      [ values.categoryName,values.categoryId]
+    );
+
+    return res;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
 module.exports = {
   addCategory,
   getCategoryByName,
   getCategoryById,
   getAllCategories,
   deleteCategory,
+  updateCategory
 };

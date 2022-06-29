@@ -22,5 +22,40 @@ async function addProduct(values) {
     throw new InternalServerErrorException();
   }
 }
-
-module.exports = { addProduct };
+async function updateProduct(values) {
+  try {
+    console.log(values)
+    const res = await pool.query(
+      "UPDATE  product SET name=$1,description=$2,category_id=$3,quantity_in_stock=$4,unit_price=$5,variant_id=$6 where product_id=$7",
+      [
+        
+        values.name,
+        values.description,
+        values.categoryId,
+        values.quantityInStock,
+        values.unitPrice,
+        values.variantId,
+        values.productId,
+      ]
+    );
+  } catch (error) {
+    // console.log(error);
+    throw new InternalServerErrorException();
+  }
+}
+async function getProductById(id) {
+  try {
+    const res = await pool.query(
+      "SELECT * FROM product where product_id=$1",
+      [
+        
+        id
+      ]
+    );
+    return res;
+  } catch (error) {
+    console.log(error);
+    throw new InternalServerErrorException();
+  }
+}
+module.exports = { addProduct,updateProduct,getProductById };

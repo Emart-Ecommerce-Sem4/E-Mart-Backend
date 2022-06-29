@@ -116,4 +116,52 @@ async function deleteCategory(id) {
   }
 }
 
-module.exports = { addCategory, getCategory, getAllCategories, deleteCategory };
+
+async function updateCategory(data) {
+  console.log(data.categoryName)
+  if (!data?.categoryName) {
+    return generateOutput(400, "Validation Error", {
+      statusCode: 400,
+      message: "Validation Error",
+    });
+  }
+  try {
+    const res = await categoryRepository.getCategoryById(data.categoryId);
+    if (res.rowCount == 0) {
+      return generateOutput(400, "Category not exist exists");
+    }
+  } catch (error) {
+    if (error instanceof InternalServerErrorException) {
+      // Internal server error exception
+      return generateOutput(500, "Error in updating the category", error.message);
+    }
+    return generateOutput(
+      400,
+      "Error in updating the category",
+      "An error occured!"
+    );
+  }
+  const values = {
+    categoryId: data.categoryId,
+    categoryName: data.categoryName,
+  };
+  try {
+    const res = await categoryRepository.updateCategory(values);
+    return generateOutput(201, "Data updated succesfully!", {
+      statusCode: 201,
+      category: values,
+    });
+  } catch (error) {
+    if (error instanceof InternalServerErrorException) {
+      // Internal server error exception
+      return generateOutput(500, "Error in updating the category", error.message);
+    }
+    return generateOutput(
+      400,
+      "Error in updating the category",
+      "An error occured!"
+    );
+  }
+}
+
+module.exports = { addCategory, getCategory, getAllCategories, deleteCategory,updateCategory };
