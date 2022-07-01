@@ -21,6 +21,14 @@ router.post("/add", async (req, res) => {
   res.send(result);
 });
 
+router.put("/update/:ID", async (req, res) => {
+   const data={categoryId: req.params.ID, categoryName:req.body.categoryName}
+   console.log(data);
+  const result = await categoryService.updateCategory(data);
+  res.status(200);
+  res.send(result);
+});
+
 router.delete("/:ID", async (req, res) => {
   const result = await categoryService.deleteCategory(req.params.ID);
   res.status(200);
