@@ -87,10 +87,10 @@ async function signin(email, password) {
 async function registerUser(values) {
   try {
     await signUpSchema.validate({
-      first_name: values.first_name,
-      last_name: values.last_name,
+      first_name: values.firstName,
+      last_name: values.lastName,
       birthday: values.birthday,
-      phone_number: values.phone_number,
+      phone_number: values.phoneNumber,
       address: values.address,
       email: values.email,
       city: values.city,
