@@ -89,24 +89,38 @@ CREATE TABLE product_review (
                         ON UPDATE CASCADE
 );
 
-CREATE TABLE order (
+CREATE TABLE user_orders (
                        order_id VARCHAR(50) PRIMARY KEY,
                        user_id VARCHAR(50) NOT NULL, 
                        order_date DATE NOT NULL,
-                       rating INTEGER NOT NULL,
-                       order_status 
-                       description VARCHAR(255) NOT NULL,
-                       
-                       
-                       
-                      
+                       rating INTEGER,
+                       rating_comment TEXT,
+                       item_count INTEGER NOT NULL,
+                       order_status VARCHAR(30) NOT NULL,
+                       comments VARCHAR(255),
+                       dispatched_date DATE,
+                       payment_method VARCHAR(30) NOT NULL,
+                       delivery_id VARCHAR(50),
+                       total_price numeric(10,2),
                     FOREIGN KEY (user_id)
                         REFERENCES user_account (user_id)
                         ON DELETE CASCADE
-                        ON UPDATE CASCADE,
-                       
-                    FOREIGN KEY (product_id)
-                        REFERENCES product (product_id)
-                        ON DELETE CASCADE
-                        ON UPDATE CASCADE
+                        ON UPDATE CASCADE,   
+                    check (order_status in ('PLACED','CONFIRMED','SHIPPED','DELIVERED','CLOSED','REJECTED','REFUNDED','STORE_PICKUP')),
+                    check (payment_method in ('CASH_ON_DELIVERY','CARD_PAYMENT','CASH_PAYMENT'))               
+);
+
+CREATE TABLE order_items (
+                        order_id VARCHAR(50),
+                        product_id VARCHAR(50),
+                        item_count INTEGER,
+                        total_price INTEGER,
+                        FOREIGN KEY (product_id)
+                            REFERENCES product (product_id)
+                            ON DELETE CASCADE
+                            ON UPDATE CASCADE,
+                        FOREIGN KEY (order_id)
+                            REFERENCES user_orders (order_id)
+                            ON DELETE CASCADE
+                            ON UPDATE CASCADE
 );
