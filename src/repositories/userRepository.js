@@ -1,5 +1,16 @@
 const pool = require("../configs/database.conf");
 
+async function getCustomerDetails(customerId) {
+  try {
+    const res = await pool.query("SELECT * from customer WHERE user_id = $1", [
+      customerId,
+    ]);
+    return res;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
+
 async function getUser(email) {
   try {
     const res = await pool.query(
@@ -42,4 +53,4 @@ async function registerUser(user) {
   }
 }
 
-module.exports = { registerUser, getUser };
+module.exports = { registerUser, getUser, getCustomerDetails };

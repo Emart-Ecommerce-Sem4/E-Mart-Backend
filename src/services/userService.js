@@ -38,12 +38,13 @@ async function signin(email, password) {
   }
   try {
     res = await userRespository.getUser(email);
+
     if (res.rowCount == 0) {
       return generateOutput(400, "Entered  Email or Password is Incorrect");
     }
     const user = res.rows[0];
+    const userDetails = await userRespository.getCustomerDetails(user.user_id);
     return new Promise((resolve, reject) => {
-      console.log(password);
       bcrypt.compare(password, user.password, async (err, isMatch) => {
         if (err) {
           generateOutput(
@@ -53,7 +54,7 @@ async function signin(email, password) {
           );
         }
         if (isMatch) {
-          const userObj = { ...user };
+          const userObj = { ...user, ...userDetails.rows[0] };
           delete userObj.password;
           resolve(
             generateOutput(200, "User succesfully signin!", {
