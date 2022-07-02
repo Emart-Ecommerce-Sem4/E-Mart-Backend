@@ -30,17 +30,15 @@ const signUpSchema = yup.object().shape({
 });
 
 async function signin(email, password) {
-  var res = null;
   try {
     await signInSchema.validate({ email: email, password: password });
   } catch (error) {
     return generateOutput(400, "Validation error", error.message);
   }
   try {
-    res = await userRespository.getUser(email);
-
+    const res = await userRespository.getUser(email);
     if (res.rowCount == 0) {
-      return generateOutput(400, "Entered  Email or Password is Incorrect");
+      return generateOutput(400, "User does not exist");
     }
     const user = res.rows[0];
     const userDetails = await userRespository.getCustomerDetails(user.user_id);
@@ -63,10 +61,12 @@ async function signin(email, password) {
             })
           );
         } else {
-          return generateOutput(
-            400,
-            "Entered  Email or Password is Incorrect",
-            "Entered  Email or Password is Incorrect"
+          resolve(
+            generateOutput(
+              400,
+              "Entered  Email or Password is Incorrect",
+              "Entered  Email or Password is Incorrect"
+            )
           );
         }
       });
@@ -74,12 +74,10 @@ async function signin(email, password) {
   } catch (error) {
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
-      return generateOutput(500, "Error in getting the user", error.message);
+      resolve(generateOutput(500, "Error in getting the user", error.message));
     }
-    return generateOutput(
-      400,
-      "Error in getting the user",
-      "An error occured!"
+    resolve(
+      generateOutput(400, "Error in getting the user", "An error occured!")
     );
   }
 }
