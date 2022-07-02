@@ -124,3 +124,13 @@ CREATE TABLE order_items (
                             ON DELETE CASCADE
                             ON UPDATE CASCADE
 );
+
+CREATE TABLE sub_category(
+                        sub_category_id VARCHAR(50) PRIMARY KEY,
+                        parent_category_id VARCHAR(50),
+                        name VARCHAR(50),
+                        FOREIGN KEY (parent_category_id)
+                            REFERENCES category (category_id)
+                            ON DELETE CASCADE
+                            ON UPDATE CASCADE
+);
