@@ -71,7 +71,6 @@ async function signin(email, password) {
       });
     });
   } catch (error) {
-    console.log(error);
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
       return generateOutput(500, "Error in getting the user", error.message);
@@ -143,10 +142,10 @@ async function registerUser(values) {
           }
           const user = {
             user_id: id,
-            first_name: values.first_name,
-            last_name: values.last_name,
+            first_name: values.firstName,
+            last_name: values.lastName,
             birthday: values.birthday,
-            phone_number: values.phone_number,
+            phone_number: values.phoneNumber,
             address: values.address,
             email: values.email,
             city: values.city,
