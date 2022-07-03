@@ -9,7 +9,13 @@ router.post("/signup", async (req, res) => {
 });
 
 router.post("/signin", async (req, res) => {
-  const result = await userService.signin(req.body.email,req.body.password);
+  const result = await userService.signin(req.body.email, req.body.password);
+  res.send(result);
+});
+
+router.get("/reset-password/:email", async (req, res) => {
+  const result = await userService.forgotPassword(req.params.email);
+  res.status(200);
   res.send(result);
 });
 
