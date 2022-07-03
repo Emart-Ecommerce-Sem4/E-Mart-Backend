@@ -115,6 +115,7 @@ CREATE TABLE order_items (
                         product_id VARCHAR(50),
                         item_count INTEGER,
                         total_price INTEGER,
+                        PRIMARY KEY (order_id, product_id),
                         FOREIGN KEY (product_id)
                             REFERENCES product (product_id)
                             ON DELETE CASCADE
