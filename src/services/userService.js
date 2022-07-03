@@ -82,6 +82,28 @@ async function signin(email, password) {
   }
 }
 
+async function forgotPassword(email) {
+  try {
+    const res = await userRespository.getUser(email);
+    if (res.rowCount === 0) {
+      return generateOutput(
+        400,
+        "User Not found for the email",
+        "No user found"
+      );
+    } else {
+      // Email sending proccess needed to implemented in here
+      return generateOutput(
+        200,
+        "Email send to your inbox",
+        "Password reset email send succesfully!"
+      );
+    }
+  } catch (error) {
+    return generateOutput(500, "Internal Server error", error);
+  }
+}
+
 async function registerUser(values) {
   try {
     await signUpSchema.validate({
@@ -183,4 +205,4 @@ async function registerUser(values) {
   });
 }
 
-module.exports = { registerUser, signin };
+module.exports = { registerUser, signin, forgotPassword };
