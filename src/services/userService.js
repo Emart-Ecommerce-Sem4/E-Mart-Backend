@@ -100,7 +100,7 @@ async function registerUser(values) {
   try {
     const res = await userRespository.getUser(values.email);
     if (res.rowCount !== 0) {
-      return generateOutput(400, "User Already exixts", "User already exists");
+      return generateOutput(400, "User Already exists", "User already exists");
     }
   } catch (error) {
     if (error instanceof InternalServerErrorException) {
@@ -170,7 +170,11 @@ async function registerUser(values) {
               );
             }
             resolve(
-              generateOutput(400, "Error in registering the user", " occured!")
+              generateOutput(
+                400,
+                "Error in registering the user",
+                "Error occured!"
+              )
             );
           }
         });
