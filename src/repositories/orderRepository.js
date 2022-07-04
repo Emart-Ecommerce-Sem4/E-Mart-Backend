@@ -3,6 +3,18 @@ const {
   InternalServerErrorException,
 } = require("../exceptions/InternalServerErrorException");
 
+async function completeOrder(values) {
+  try {
+    const res = await pool.query(
+      "UPDATE user_orders SET order_status = $1 WHERE order_id = $2",
+      ["DELIVERED", values.orderId]
+    );
+    return true;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
+
 async function rejectOrder(values) {
   // Here order rejection comment also needed to be added
   try {
@@ -90,4 +102,5 @@ module.exports = {
   getOrderProducts,
   shipOrder,
   rejectOrder,
+  completeOrder,
 };
