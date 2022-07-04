@@ -20,6 +20,20 @@ const orderDeliverValidation = yup.object().shape({
   orderId: yup.string().required(),
 });
 
+async function refundOrder(values) {
+  if (!values?.orderId || !values.refundValue) {
+    return generateOutput(400, "Validation Error", {
+      error: "All the fields are required",
+    });
+  }
+  try {
+    const res = await orderRepository.refundOrder(values);
+    return generateOutput(201, "Refund added succesfully!", "Refund given");
+  } catch (error) {
+    return generateOutput(400, "Internal Server Error", error);
+  }
+}
+
 async function completeOrder(values) {
   if (!values?.orderId) {
     return generateOutput(400, "Validation Error", {
@@ -120,4 +134,5 @@ module.exports = {
   deliverOrder,
   rejectOrder,
   completeOrder,
+  refundOrder,
 };

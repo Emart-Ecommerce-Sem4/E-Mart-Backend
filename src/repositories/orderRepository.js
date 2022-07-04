@@ -3,6 +3,17 @@ const {
   InternalServerErrorException,
 } = require("../exceptions/InternalServerErrorException");
 
+async function refundOrder(values) {
+  try {
+    const res = await pool.query(
+      "UPDATE user_orders SET order_status = $1 WHERE order_id = $2",
+      ["REFUNDED", values.orderId]
+    );
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
+
 async function completeOrder(values) {
   try {
     const res = await pool.query(
@@ -103,4 +114,5 @@ module.exports = {
   shipOrder,
   rejectOrder,
   completeOrder,
+  refundOrder,
 };
