@@ -3,6 +3,18 @@ const {
   InternalServerErrorException,
 } = require("../exceptions/InternalServerErrorException");
 
+async function getOrderProducts(orderId) {
+  try {
+    const res = await pool.query(
+      "SELECT * from order_items WHERE order_id = $1",
+      [orderId]
+    );
+    return res;
+  } catch (error) {
+    throw InternalServerErrorException();
+  }
+}
+
 async function getOrdersAccordingToStatus(status) {
   try {
     const res = await pool.query(
@@ -47,4 +59,4 @@ async function addOrder(values) {
   }
 }
 
-module.exports = { addOrder, getOrdersAccordingToStatus };
+module.exports = { addOrder, getOrdersAccordingToStatus, getOrderProducts };

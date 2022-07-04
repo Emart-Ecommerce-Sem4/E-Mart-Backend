@@ -14,6 +14,17 @@ const orderAddSchema = yup.object().shape({
   totalPrice: yup.number().required(),
 });
 
+async function getOrderProducts(orderId) {
+  try {
+    const res = await orderRepository.getOrderProducts(orderId);
+    return generateOutput(200, "Products fetched succesfully", {
+      products: res.rows,
+    });
+  } catch (error) {
+    return generateOutput(500, "Internal Server Error", error);
+  }
+}
+
 async function getOrdersAccordingToStatus(status) {
   try {
     const res = await orderRepository.getOrdersAccordingToStatus(status);
@@ -45,4 +56,4 @@ async function addOrder(values) {
   }
 }
 
-module.exports = { addOrder, getOrdersAccordingToStatus };
+module.exports = { addOrder, getOrdersAccordingToStatus, getOrderProducts };
