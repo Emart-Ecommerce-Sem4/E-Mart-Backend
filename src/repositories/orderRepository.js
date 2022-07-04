@@ -3,12 +3,26 @@ const {
   InternalServerErrorException,
 } = require("../exceptions/InternalServerErrorException");
 
+async function rejectOrder(values) {
+  // Here order rejection comment also needed to be added
+  try {
+    const res = await pool.query(
+      "UPDATE user_orders SET order_status = $1 WHERE order_id= $2",
+      ["REJECTED", values.orderId]
+    );
+    return true;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
+
 async function shipOrder(values) {
   try {
     const res = await pool.query(
       "UPDATE user_orders SET order_status = $1,dispatched_date = $2, delivery_id = $3 WHERE order_id = $4",
       ["SHIPPED", values.dispatchedDate, values.deliverId, values.orderId]
     );
+    return true;
   } catch (error) {
     throw new InternalServerErrorException();
   }
@@ -75,4 +89,5 @@ module.exports = {
   getOrdersAccordingToStatus,
   getOrderProducts,
   shipOrder,
+  rejectOrder,
 };

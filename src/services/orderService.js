@@ -14,7 +14,33 @@ const orderAddSchema = yup.object().shape({
   totalPrice: yup.number().required(),
 });
 
+const orderDeliverValidation = yup.object().shape({
+  dispatchedDate: yup.string().required(),
+  deliverId: yup.string().required(),
+  orderId: yup.string().required(),
+});
+
+async function rejectOrder(values) {
+  try {
+    const res = await orderRepository.rejectOrder(values);
+    return generateOutput(
+      201,
+      "Order rejected succesfully",
+      "Rejection success"
+    );
+  } catch (error) {
+    return generateOutput(500, "Internal Server Error", error);
+  }
+}
+
 async function deliverOrder(values) {
+  try {
+    await orderDeliverValidation.validate({
+      ...values,
+    });
+  } catch (error) {
+    return generateOutput(400, "Validation error", { error: error.errors });
+  }
   try {
     const res = await orderRepository.shipOrder(values);
     return generateOutput(
@@ -74,4 +100,5 @@ module.exports = {
   getOrdersAccordingToStatus,
   getOrderProducts,
   deliverOrder,
+  rejectOrder,
 };
