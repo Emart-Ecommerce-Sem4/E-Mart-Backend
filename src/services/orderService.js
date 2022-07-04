@@ -14,6 +14,17 @@ const orderAddSchema = yup.object().shape({
   totalPrice: yup.number().required(),
 });
 
+async function getOrdersAccordingToStatus(status) {
+  try {
+    const res = await orderRepository.getOrdersAccordingToStatus(status);
+    return generateOutput(200, "Orders fetched succesfully!", {
+      orders: res.rows,
+    });
+  } catch (error) {
+    return generateOutput(500, "Internal Server Error", error);
+  }
+}
+
 async function addOrder(values) {
   try {
     await orderAddSchema.validate({
@@ -34,4 +45,4 @@ async function addOrder(values) {
   }
 }
 
-module.exports = { addOrder };
+module.exports = { addOrder, getOrdersAccordingToStatus };
