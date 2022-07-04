@@ -6,7 +6,7 @@ const {
 async function getOrderProducts(orderId) {
   try {
     const res = await pool.query(
-      "SELECT * from order_items WHERE order_id = $1",
+      "SELECT * from product NATURAL JOIN order_items WHERE order_id = $1",
       [orderId]
     );
     return res;
