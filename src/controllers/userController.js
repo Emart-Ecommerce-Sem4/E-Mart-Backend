@@ -3,6 +3,12 @@ const userService = require("../services/userService");
 
 const router = express.Router();
 
+router.get("/:ID", async (req, res) => {
+  const result = await userService.getUserDetails(req.params.ID);
+  res.status(200);
+  res.send(result);
+});
+
 router.post("/signup", async (req, res) => {
   const result = await userService.registerUser(req.body);
   res.send(result);

@@ -29,6 +29,17 @@ const signUpSchema = yup.object().shape({
   password: yup.string().required().min(8).max(15),
 });
 
+async function getUserDetails(userId) {
+  try {
+    const res = await userRespository.getCustomerDetails(userId);
+    return generateOutput(200, "User fetched succesfully", {
+      user: res.rows[0],
+    });
+  } catch (error) {
+    return generateOutput(500, "Internal Server Error", error);
+  }
+}
+
 async function signin(email, password) {
   try {
     await signInSchema.validate({ email: email, password: password });
@@ -205,4 +216,4 @@ async function registerUser(values) {
   });
 }
 
-module.exports = { registerUser, signin, forgotPassword };
+module.exports = { registerUser, signin, forgotPassword, getUserDetails };
