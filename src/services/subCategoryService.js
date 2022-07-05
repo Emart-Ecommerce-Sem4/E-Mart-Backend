@@ -9,6 +9,19 @@ const subCategoryAddSchema = yup.object().shape({
   name: yup.string().required(),
 });
 
+async function getSubCategoriesForParentId(parentId) {
+  try {
+    const res = await subCategoryRepository.getSubCategoriesForParentId(
+      parentId
+    );
+    return generateOutput(200, "Categories fetched", {
+      subCategories: res.rows,
+    });
+  } catch (error) {
+    return generateOutput(500, "Internal Server Error", { error });
+  }
+}
+
 async function addSubCategory(values) {
   try {
     await subCategoryAddSchema.validate({
@@ -41,4 +54,5 @@ async function addSubCategory(values) {
 
 module.exports = {
   addSubCategory,
+  getSubCategoriesForParentId,
 };

@@ -3,6 +3,18 @@ const {
   InternalServerErrorException,
 } = require("../exceptions/InternalServerErrorException");
 
+async function getImagesForProduct(productId) {
+  try {
+    const res = await pool.query(
+      "SELECT * from product_images WHERE product_id = $1",
+      [productId]
+    );
+    return res;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
+
 async function getAllProducts() {
   try {
     const res = await pool.query("SELECT * from product");
@@ -62,4 +74,10 @@ async function getProductById(id) {
     throw new InternalServerErrorException();
   }
 }
-module.exports = { addProduct, updateProduct, getProductById, getAllProducts };
+module.exports = {
+  addProduct,
+  updateProduct,
+  getProductById,
+  getAllProducts,
+  getImagesForProduct,
+};

@@ -3,6 +3,18 @@ const {
   InternalServerErrorException,
 } = require("../exceptions/InternalServerErrorException");
 
+async function getSubCategoriesForParentId(parentId) {
+  try {
+    const res = await pool.query(
+      "SELECT * from sub_category WHERE parent_category_id = $1",
+      [parentId]
+    );
+    return res;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
+
 async function getSubCategoryByName(name) {
   try {
     const res = await pool.query("SELECT * from sub_category WHERE name = $1", [
@@ -27,4 +39,8 @@ async function addSubCategory(values) {
   }
 }
 
-module.exports = { addSubCategory, getSubCategoryByName };
+module.exports = {
+  addSubCategory,
+  getSubCategoryByName,
+  getSubCategoriesForParentId,
+};

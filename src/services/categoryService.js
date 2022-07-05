@@ -31,7 +31,12 @@ async function getAllCategories() {
 async function getCategory(id) {
   try {
     const res = await categoryRepository.getCategoryById(id);
-    return generateOutput(200, "Category getting sucess", res.rows);
+    if (res.rowCount > 0) {
+      return generateOutput(400, "Category Not exists");
+    }
+    return generateOutput(200, "Category getting sucess", {
+      category: res.rows[0],
+    });
   } catch (error) {
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
@@ -116,9 +121,8 @@ async function deleteCategory(id) {
   }
 }
 
-
 async function updateCategory(data) {
-  console.log(data.categoryName)
+  console.log(data.categoryName);
   if (!data?.categoryName) {
     return generateOutput(400, "Validation Error", {
       statusCode: 400,
@@ -133,7 +137,11 @@ async function updateCategory(data) {
   } catch (error) {
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
-      return generateOutput(500, "Error in updating the category", error.message);
+      return generateOutput(
+        500,
+        "Error in updating the category",
+        error.message
+      );
     }
     return generateOutput(
       400,
@@ -154,7 +162,11 @@ async function updateCategory(data) {
   } catch (error) {
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
-      return generateOutput(500, "Error in updating the category", error.message);
+      return generateOutput(
+        500,
+        "Error in updating the category",
+        error.message
+      );
     }
     return generateOutput(
       400,
@@ -164,4 +176,10 @@ async function updateCategory(data) {
   }
 }
 
-module.exports = { addCategory, getCategory, getAllCategories, deleteCategory,updateCategory };
+module.exports = {
+  addCategory,
+  getCategory,
+  getAllCategories,
+  deleteCategory,
+  updateCategory,
+};

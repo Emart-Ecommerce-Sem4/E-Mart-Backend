@@ -6,6 +6,23 @@ const {
   InternalServerErrorException,
 } = require("../exceptions/InternalServerErrorException");
 
+async function getVariant(variantId) {
+  try {
+    const res = await variantRepository.getVaraintById(variantId);
+    if (res.rows.length > 0) {
+      return generateOutput(200, "Variant fetched succesfully", {
+        variant: res.rows[0],
+      });
+    } else {
+      return generateOutput(200, "Variant do not found!", {
+        variant: null,
+      });
+    }
+  } catch (error) {
+    return generateOutput(500, "Internal Server Error", { error });
+  }
+}
+
 async function addVariant(values) {
   try {
     const res = await variantRepository.getVaraintByType(values.type);
@@ -47,7 +64,6 @@ async function addVariant(values) {
   }
 }
 
-
 async function updateVariant(values) {
   try {
     const res = await variantRepository.getVaraintById(values.id);
@@ -58,7 +74,11 @@ async function updateVariant(values) {
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
 
-      return generateOutput(500, "Error in updating the variant", error.message);
+      return generateOutput(
+        500,
+        "Error in updating the variant",
+        error.message
+      );
     }
     return generateOutput(
       400,
@@ -66,7 +86,7 @@ async function updateVariant(values) {
       "An error occured!"
     );
   }
- 
+
   try {
     const res = await variantRepository.updateVariant(values);
     return generateOutput(201, "Variant updated succesfully!", values);
@@ -74,9 +94,13 @@ async function updateVariant(values) {
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
 
-      return generateOutput(500, "Error in updating the variant", error.message);
+      return generateOutput(
+        500,
+        "Error in updating the variant",
+        error.message
+      );
     }
-    console.log(error)
+    console.log(error);
     return generateOutput(
       400,
       "Error in updating the variant",
@@ -85,7 +109,8 @@ async function updateVariant(values) {
   }
 }
 
-
 module.exports = {
-  addVariant,updateVariant
+  addVariant,
+  updateVariant,
+  getVariant,
 };

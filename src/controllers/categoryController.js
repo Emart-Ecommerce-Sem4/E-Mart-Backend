@@ -4,7 +4,7 @@ const authenticateToken = require("../middlewares/authorization");
 
 const router = express.Router();
 
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/", async (req, res) => {
   const result = await categoryService.getAllCategories();
   res.status(200);
   res.send(result);

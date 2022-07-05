@@ -40,7 +40,7 @@ async function updateVariant(values) {
   try {
     const res = await pool.query(
       "UPDATE variant SET variant_type =$1 WHERE variant_id=$2",
-      [ values.type,values.id,]
+      [values.type, values.id]
     );
     return res;
   } catch (error) {
@@ -48,4 +48,9 @@ async function updateVariant(values) {
   }
 }
 
-module.exports = { addVariant, getVaraintByType,getVaraintById ,updateVariant};
+module.exports = {
+  addVariant,
+  getVaraintByType,
+  getVaraintById,
+  updateVariant,
+};
