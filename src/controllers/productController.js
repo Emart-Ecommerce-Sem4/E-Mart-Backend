@@ -4,6 +4,12 @@ const authenticateToken = require("../middlewares/authorization");
 
 const router = express.Router();
 
+router.get("/all", async (req, res) => {
+  const response = await productService.getAllProducts();
+  res.status(200);
+  res.send(response);
+});
+
 router.post("/add", authenticateToken, async (req, res) => {
   const response = await productService.addProduct(req.body);
   res.status(200);

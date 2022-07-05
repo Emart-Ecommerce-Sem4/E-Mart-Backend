@@ -3,6 +3,15 @@ const {
   InternalServerErrorException,
 } = require("../exceptions/InternalServerErrorException");
 
+async function getAllProducts() {
+  try {
+    const res = await pool.query("SELECT * from product");
+    return res;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
+
 async function addProduct(values) {
   try {
     const res = await pool.query(
@@ -24,11 +33,10 @@ async function addProduct(values) {
 }
 async function updateProduct(values) {
   try {
-    console.log(values)
+    console.log(values);
     const res = await pool.query(
       "UPDATE  product SET name=$1,description=$2,category_id=$3,quantity_in_stock=$4,unit_price=$5,variant_id=$6 where product_id=$7",
       [
-        
         values.name,
         values.description,
         values.categoryId,
@@ -45,17 +53,13 @@ async function updateProduct(values) {
 }
 async function getProductById(id) {
   try {
-    const res = await pool.query(
-      "SELECT * FROM product where product_id=$1",
-      [
-        
-        id
-      ]
-    );
+    const res = await pool.query("SELECT * FROM product where product_id=$1", [
+      id,
+    ]);
     return res;
   } catch (error) {
     console.log(error);
     throw new InternalServerErrorException();
   }
 }
-module.exports = { addProduct,updateProduct,getProductById };
+module.exports = { addProduct, updateProduct, getProductById, getAllProducts };

@@ -135,3 +135,13 @@ CREATE TABLE sub_category(
                             ON DELETE CASCADE
                             ON UPDATE CASCADE
 );
+
+CREATE TABLE product_images (
+                        product_id VARCHAR(50),
+                        image VARCHAR(255),
+                        PRIMARY KEY (product_id,image),
+                        FOREIGN KEY (product_id)
+                            REFERENCES product (product_id)
+                            ON DELETE CASCADE
+                            ON UPDATE CASCADE
+);

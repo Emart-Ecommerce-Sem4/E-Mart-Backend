@@ -16,6 +16,19 @@ const productAddSchema = yup.object().shape({
   variantId: yup.string().required(),
 });
 
+async function getAllProducts() {
+  try {
+    const res = await productRepository.getAllProducts();
+    return generateOutput(200, "Products fetched succesfully!", {
+      products: res.rows,
+    });
+  } catch (error) {
+    return generateOutput(500, "Error occured while getting the products", {
+      error,
+    });
+  }
+}
+
 async function addProduct(values) {
   try {
     await productAddSchema.validate({ ...values });
@@ -51,16 +64,20 @@ async function updateProduct(values) {
     return generateOutput(400, "Validation error", error.message);
   }
   try {
-    const reslt= await productRepository.getProductById(values.productId)
+    const reslt = await productRepository.getProductById(values.productId);
     if (reslt.rowCount == 0) {
       return generateOutput(400, "product not exist exists");
     }
   } catch (error) {
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
-      return generateOutput(500, "Error in updating the product", error.message);
+      return generateOutput(
+        500,
+        "Error in updating the product",
+        error.message
+      );
     }
-   
+
     return generateOutput(
       400,
       "Error in updating the product",
@@ -74,7 +91,11 @@ async function updateProduct(values) {
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
 
-      return generateOutput(500, "Error in updating the product", error.message);
+      return generateOutput(
+        500,
+        "Error in updating the product",
+        error.message
+      );
     }
     console.log(error);
     return generateOutput(
@@ -84,4 +105,4 @@ async function updateProduct(values) {
     );
   }
 }
-module.exports = { addProduct,updateProduct };
+module.exports = { addProduct, updateProduct, getAllProducts };
