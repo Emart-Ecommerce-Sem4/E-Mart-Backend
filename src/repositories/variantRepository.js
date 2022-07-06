@@ -28,8 +28,15 @@ async function getVaraintById(ID) {
 async function addVariant(values) {
   try {
     const res = await pool.query(
-      "INSERT INTO variant(variant_id,variant_type) VALUES ($1,$2)",
-      [values.id, values.type]
+      "INSERT INTO variant VALUES ($1,$2,$3,$4,$5,$6)",
+      [
+        values.variantId,
+        values.productId,
+        values.description,
+        values.variantType,
+        values.qunatityInStock,
+        values.unitPrice,
+      ]
     );
     return res;
   } catch (error) {

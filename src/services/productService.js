@@ -9,11 +9,8 @@ const {
 
 const productAddSchema = yup.object().shape({
   name: yup.string().required().max(30),
-  description: yup.string().required(),
   categoryId: yup.string().required(),
-  quantityInStock: yup.number(),
-  unitPrice: yup.number(),
-  variantId: yup.string().required(),
+  subCategoryId: yup.string().required(),
 });
 
 async function getAllProducts() {
