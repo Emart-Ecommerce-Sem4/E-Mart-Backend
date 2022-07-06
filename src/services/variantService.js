@@ -41,19 +41,14 @@ async function addVariant(values) {
     return generateOutput("Validation Error", 400, { error: error.errors });
   }
   try {
-    const res = await variantRepository.getVaraintByType(values.variantType);
-    if (res.rowCount !== 0) {
-      return generateOutput(400, "Variant Already Exists");
-    } else {
-      const data = {
-        variantId: uuid.v4(),
-        ...values,
-      };
-      const result = await variantRepository.addVariant(data);
-      return generateOutput(201, "Variant added succesfully!", {
-        variant: data,
-      });
-    }
+    const data = {
+      variantId: uuid.v4(),
+      ...values,
+    };
+    const result = await variantRepository.addVariant(data);
+    return generateOutput(201, "Variant added succesfully!", {
+      variant: data,
+    });
   } catch (error) {
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
