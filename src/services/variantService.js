@@ -15,6 +15,17 @@ const variantAddSchema = yup.object().shape({
   unitPrice: yup.number().required(),
 });
 
+async function getVarientsForProductId(productId) {
+  try {
+    const res = await variantRepository.getVarientsForProduct(productId);
+    return generateOutput(200, "Variants fetched succesfully!", {
+      variants: res.rows,
+    });
+  } catch (error) {
+    return generateOutput(500, "Internal Sever error", { error });
+  }
+}
+
 async function getVariant(variantId) {
   try {
     const res = await variantRepository.getVaraintById(variantId);
@@ -112,4 +123,5 @@ module.exports = {
   addVariant,
   updateVariant,
   getVariant,
+  getVarientsForProductId,
 };
