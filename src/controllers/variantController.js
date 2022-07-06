@@ -9,7 +9,7 @@ router.get("/:id", async (req, res) => {
   res.send(response);
 });
 
-router.post("/add", authenticateToken, async (req, res) => {
+router.post("/add", async (req, res) => {
   const response = await variantService.addVariant(req.body);
   res.status(200);
   res.send(response);

@@ -10,7 +10,7 @@ router.get("/all", async (req, res) => {
   res.send(response);
 });
 
-router.post("/add", authenticateToken, async (req, res) => {
+router.post("/add", async (req, res) => {
   const response = await productService.addProduct(req.body);
   res.status(200);
   res.send(response);
