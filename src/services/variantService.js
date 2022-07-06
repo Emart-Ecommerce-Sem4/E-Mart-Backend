@@ -11,8 +11,8 @@ const variantAddSchema = yup.object().shape({
   productId: yup.string().required(),
   description: yup.string().required(),
   variantType: yup.string().required(),
-  quantity_in_stock: yup.number().required(),
-  unit_price: yup.number().required(),
+  qunatityInStock: yup.number().required(),
+  unitPrice: yup.number().required(),
 });
 
 async function getVariant(variantId) {
