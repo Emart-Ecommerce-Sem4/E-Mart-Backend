@@ -23,9 +23,12 @@ const signUpSchema = yup.object().shape({
   last_name: yup.string().required(),
   birthday: yup.date().required(),
   phone_number: yup.string().required(),
-  address: yup.string().required(),
+  address_line_1: yup.string().required(),
+  address_line_2: yup.string().required(),
   email: yup.string().email().required(),
   city: yup.string().required(),
+  district:yup.string().required(),
+  postal_code:yup.string().required(),
   password: yup.string().required().min(8).max(15),
 });
 
@@ -42,6 +45,7 @@ async function getUserDetails(userId) {
 
 async function signin(email, password) {
   try {
+    
     await signInSchema.validate({ email: email, password: password });
   } catch (error) {
     return generateOutput(400, "Validation error", error.message);
@@ -117,17 +121,22 @@ async function forgotPassword(email) {
 
 async function registerUser(values) {
   try {
+  
     await signUpSchema.validate({
-      first_name: values.firstName,
-      last_name: values.lastName,
+      first_name: values.first_name,
+      last_name: values.last_name,
       birthday: values.birthday,
-      phone_number: values.phoneNumber,
-      address: values.address,
+      phone_number: values.phone_number,
+      address_line_1: values.address_line_1,
+      address_line_2: values.address_line_2,
       email: values.email,
       city: values.city,
+      district:values.district,
+      postal_code:values.postal_code,
       password: values.password,
     });
   } catch (error) {
+ 
     return generateOutput(400, "Validation error", error.message);
   }
   try {
@@ -174,13 +183,16 @@ async function registerUser(values) {
           }
           const user = {
             user_id: id,
-            first_name: values.firstName,
-            last_name: values.lastName,
+            first_name: values.first_name,
+            last_name: values.last_name,
             birthday: values.birthday,
-            phone_number: values.phoneNumber,
-            address: values.address,
+            phone_number: values.phone_number,
+            address_line_1: values.address_line_1,
+            address_line_2:values.address_line_2,
             email: values.email,
             city: values.city,
+            district:values.district,
+            postal_code:values.postal_code,
             password: hash,
           };
           try {

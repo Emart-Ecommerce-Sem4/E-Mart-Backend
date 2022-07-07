@@ -8,8 +8,8 @@ async function getTotalSalesAndOderDetails(year) {
     try {
       const totalSales = await pool.query(
 
-        "SELECT order_status,SUM(total_price)  FROM user_orders where order_date::text LIKE $1 GROUP BY order_status",
-        [year+'%']
+        "SELECT order_status,SUM(total_price) as sales_on_status FROM user_orders where date_part('year',order_date)=$1 GROUP BY order_status",
+        [year]
       );
      
       totalSales.rows.forEach(element => {
@@ -25,8 +25,8 @@ async function getTotalSalesAndOderDetails(year) {
     try {
       const totalOdersOnStatus = await pool.query(
 
-        "SELECT order_status,count(order_id) AS total_orders FROM user_orders where order_date::text LIKE $1 GROUP BY order_status",
-        [year+'%']
+        "SELECT order_status,count(order_id) AS total_orders_on_status FROM user_orders where date_part('year',order_date)=$1 GROUP BY order_status",
+        [year]
       );
 
       totalOdersOnStatus.rows.forEach(element => {
@@ -41,15 +41,25 @@ async function getTotalSalesAndOderDetails(year) {
     try {
       const totalOder = await pool.query(
 
-        "SELECT count(order_id) AS total_orders FROM user_orders where order_date::text LIKE $1",
-        [year+'%']
+        "SELECT count(order_id) AS total_orders FROM user_orders where date_part('year',order_date)=$1",
+        [year]
       );
       totalOder.rows.forEach(element => {
         result.push(element);
       });
-    return result;
+   
     } catch (error) {
      
+      throw new InternalServerErrorException();
+    }
+    try {
+      const odersOnDeliveryMethods= await pool.query("select delivery_method, count(order_id) as total_orders_on_delivery_method from user_orders where date_part('year',order_date)=$1 GROUP BY delivery_method");
+      odersOnDeliveryMethods.rows.forEach(element=>{
+        result.push(element);
+      })
+
+      return result;
+    } catch (error) {
       throw new InternalServerErrorException();
     }
 
