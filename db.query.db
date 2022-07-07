@@ -1,51 +1,56 @@
+CREATE TABLE  user_account (
+    user_id VARCHAR(50) PRIMARY KEY ,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    user_role VARCHAR (50),
+    check (user_role in ('ADMIN','CUSTOMER'))
+);
+
 CREATE TABLE customer (
                        user_id VARCHAR(50) PRIMARY KEY,
                        first_name VARCHAR(255) NOT NULL, 
                        last_name VARCHAR(255) NOT NULL,
                        birthday DATE NOT NULL,
                        phone_number VARCHAR(20) NOT NULL,
-                       address VARCHAR(255) NOT NULL,
-                       
+                       address_line_1 VARCHAR(255) NOT NULL,
+                       address_line_2 VARCHAR(255) NOT NULL,
                        city VARCHAR(255) NOT NULL,
-                       state state_type DEFAULT 'accepted' NOT NULL,
-                      
+                       postal_code VARCHAR(50),
+                       district VARCHAR(50) NOT NULL,
+                       created_at TIMESTAMP default current_timestamp,
                     FOREIGN KEY (user_id)
                         REFERENCES user_account (user_id)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE
 );
-CREATE TYPE user_type AS ENUM('customer', 'admin');
-CREATE TYPE order_status_type AS ENUM('pending', 'admin');
-CREATE TYPE state_type AS ENUM('accepted', 'declined'); 
 
 
-CREATE TABLE  user_account (
-    user_id VARCHAR(50) PRIMARY KEY ,
-    email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    user_role user_type
+CREATE TABLE  category(
+    category_id VARCHAR(50) PRIMARY KEY ,
+    category_name VARCHAR(50) NOT NULL  ,
+    created_at TIMESTAMP default current_timestamp
 );
-CREATE TABLE admin (
-                       user_id VARCHAR(50) PRIMARY KEY,
-                       first_name VARCHAR(255) NOT NULL, 
-                       last_name VARCHAR(255) NOT NULL,
-                       birthday DATE NOT NULL,
-                       phone_number VARCHAR(20) NOT NULL,
-                       address VARCHAR(255) NOT NULL,
-                       email VARCHAR(255) NOT NULL,
-                       
-                       state state_type DEFAULT 'accepted' NOT NULL,
-                      
-                    FOREIGN KEY (user_id)
-                        REFERENCES user_account (user_id)
-                        ON DELETE CASCADE
-                        ON UPDATE CASCADE
+
+CREATE TABLE sub_category(
+                        sub_category_id VARCHAR(50) PRIMARY KEY,
+                        category_id VARCHAR(50),
+                        name VARCHAR(50),
+                        created_at TIMESTAMP default current_timestamp,
+                        FOREIGN KEY (category_id)
+                            REFERENCES category (category_id)
+                            ON DELETE CASCADE
+                            ON UPDATE CASCADE
 );
+
+
 CREATE TABLE  product (
     product_id VARCHAR(50) PRIMARY KEY ,
-    name VARCHAR(50) NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    weight NUMERIC(10,2),
+    sku VARCHAR(50),
     category_id VARCHAR(50) NOT NULL,
     sub_category_id VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP default current_timestamp,
     FOREIGN KEY (sub_category_id)
                         REFERENCES sub_category (sub_category_id)
                         ON DELETE CASCADE
@@ -55,10 +60,8 @@ CREATE TABLE  product (
                         ON DELETE CASCADE
                         ON UPDATE CASCADE
 );
-CREATE TABLE  category(
-    category_id VARCHAR(50) PRIMARY KEY ,
-    category_name VARCHAR(50) NOT NULL  
-);
+
+
 CREATE TABLE  variant(
     variant_id VARCHAR(50) PRIMARY KEY ,
     product_id VARCHAR(50),
@@ -66,6 +69,7 @@ CREATE TABLE  variant(
     variant_type VARCHAR(50),
     quantity_in_stock INTEGER NOT NULL,
     unit_price NUMERIC(10,2),
+    created_at TIMESTAMP default current_timestamp,
     FOREIGN KEY (product_id)
         REFERENCES product (product_id)
         ON DELETE CASCADE
@@ -73,79 +77,36 @@ CREATE TABLE  variant(
     
 );
 
-CREATE TABLE product_review (
-                       review_id VARCHAR(50) PRIMARY KEY,
-                       user_id VARCHAR(50) NOT NULL, 
-                       product_id VARCHAR(50) NOT NULL,
-                       rating INTEGER NOT NULL,
-                       
-                       description VARCHAR(255) NOT NULL,
-                       
-                       
-                       
-                      
-                    FOREIGN KEY (user_id)
-                        REFERENCES user_account (user_id)
-                        ON DELETE CASCADE
-                        ON UPDATE CASCADE,
-                       
-                    FOREIGN KEY (product_id)
-                        REFERENCES product (product_id)
-                        ON DELETE CASCADE
-                        ON UPDATE CASCADE
-);
 
 CREATE TABLE user_orders (
                        order_id VARCHAR(50) PRIMARY KEY,
                        user_id VARCHAR(50) NOT NULL, 
+                       variant_id VARCHAR(50) NOT NULL,
                        order_date DATE NOT NULL,
-                       rating INTEGER,
-                       rating_comment TEXT,
                        item_count INTEGER NOT NULL,
+                       delivery_method VARCHAR(50) NOT NULL,
                        order_status VARCHAR(30) NOT NULL,
                        comments VARCHAR(255),
                        dispatched_date DATE,
                        payment_method VARCHAR(30) NOT NULL,
                        delivery_id VARCHAR(50),
                        total_price numeric(10,2),
+                       created_at TIMESTAMP default current_timestamp,
                     FOREIGN KEY (user_id)
                         REFERENCES user_account (user_id)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE,   
-                    check (order_status in ('PLACED','CONFIRMED','SHIPPED','DELIVERED','CLOSED','REJECTED','REFUNDED','STORE_PICKUP')),
-                    check (payment_method in ('CASH_ON_DELIVERY','CARD_PAYMENT','CASH_PAYMENT'))               
+                    check (order_status in ('PLACED','SHIPPED','DELIVERED','REJECTED','REFUNDED')),
+                    check (payment_method in ('CASH_ON_DELIVERY','CARD_PAYMENT','CASH_PAYMENT')),
+                    check (delivery_method in ('STORE_PICKUP','DELIVERY'))               
 );
 
-CREATE TABLE order_items (
-                        order_id VARCHAR(50),
-                        product_id VARCHAR(50),
-                        item_count INTEGER,
-                        total_price INTEGER,
-                        PRIMARY KEY (order_id, product_id),
-                        FOREIGN KEY (product_id)
-                            REFERENCES product (product_id)
-                            ON DELETE CASCADE
-                            ON UPDATE CASCADE,
-                        FOREIGN KEY (order_id)
-                            REFERENCES user_orders (order_id)
-                            ON DELETE CASCADE
-                            ON UPDATE CASCADE
-);
-
-CREATE TABLE sub_category(
-                        sub_category_id VARCHAR(50) PRIMARY KEY,
-                        parent_category_id VARCHAR(50),
-                        name VARCHAR(50),
-                        FOREIGN KEY (parent_category_id)
-                            REFERENCES category (category_id)
-                            ON DELETE CASCADE
-                            ON UPDATE CASCADE
-);
 
 CREATE TABLE product_images (
                         product_id VARCHAR(50),
                         image VARCHAR(255),
                         PRIMARY KEY (product_id,image),
+                        created_at TIMESTAMP default current_timestamp,
                         FOREIGN KEY (product_id)
                             REFERENCES product (product_id)
                             ON DELETE CASCADE

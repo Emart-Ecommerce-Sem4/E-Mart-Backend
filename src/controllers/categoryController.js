@@ -16,7 +16,7 @@ router.get("/get/:ID", async (req, res) => {
   res.send(result);
 });
 
-router.post("/add", authenticateToken, async (req, res) => {
+router.post("/add", async (req, res) => {
   const result = await categoryService.addCategory(req.body);
   res.status(200);
   res.send(result);

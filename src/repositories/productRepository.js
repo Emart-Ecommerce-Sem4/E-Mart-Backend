@@ -27,8 +27,15 @@ async function getAllProducts() {
 async function addProduct(values) {
   try {
     const res = await pool.query(
-      "INSERT INTO product(product_id,name,category_id,sub_category_id) VALUES ($1,$2,$3,$4)",
-      [values.id, values.name, values.categoryId, values.subCategoryId]
+      "INSERT INTO product VALUES ($1,$2,$3,$4,$5,$6)",
+      [
+        values.id,
+        values.title,
+        values.weight,
+        values.sku,
+        values.categoryId,
+        values.subCategoryId,
+      ]
     );
   } catch (error) {
     console.log(error);

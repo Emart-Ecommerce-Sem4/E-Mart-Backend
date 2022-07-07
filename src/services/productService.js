@@ -9,7 +9,9 @@ const {
 } = require("../exceptions/InternalServerErrorException");
 
 const productAddSchema = yup.object().shape({
-  name: yup.string().required().max(30),
+  title: yup.string().required().max(50),
+  weight: yup.number().required(),
+  sku: yup.string().required(),
   categoryId: yup.string().required(),
   subCategoryId: yup.string().required(),
 });
