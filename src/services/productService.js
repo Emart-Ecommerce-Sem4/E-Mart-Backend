@@ -16,6 +16,21 @@ const productAddSchema = yup.object().shape({
   subCategoryId: yup.string().required(),
 });
 
+async function getProduct(id) {
+  try {
+    const res = await productRepository.getProductById(id);
+    if (res.rowCount) {
+      return generateOutput(200, "Product fetched succesfully!", {
+        product: res.rows[0],
+      });
+    } else {
+      return generateOutput(404, "Product not found");
+    }
+  } catch (error) {
+    return generateOutput(500, "Internal server error!", { error });
+  }
+}
+
 async function getAllProducts() {
   try {
     const res = await productRepository.getAllProducts();
@@ -110,4 +125,4 @@ async function updateProduct(values) {
     );
   }
 }
-module.exports = { addProduct, updateProduct, getAllProducts };
+module.exports = { addProduct, updateProduct, getAllProducts, getProduct };

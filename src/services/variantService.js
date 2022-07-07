@@ -76,7 +76,7 @@ async function addVariant(values) {
 
 async function updateVariant(values) {
   try {
-    const res = await variantRepository.getVaraintById(values.id);
+    const res = await variantRepository.getVaraintById(values.variantId);
     if (res.rowCount == 0) {
       return generateOutput(400, "Variant Not Exists");
     }
@@ -99,7 +99,9 @@ async function updateVariant(values) {
 
   try {
     const res = await variantRepository.updateVariant(values);
-    return generateOutput(201, "Variant updated succesfully!", values);
+    return generateOutput(201, "Variant updated succesfully!", {
+      variant: values,
+    });
   } catch (error) {
     if (error instanceof InternalServerErrorException) {
       // Internal server error exception
