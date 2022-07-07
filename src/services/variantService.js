@@ -11,9 +11,20 @@ const variantAddSchema = yup.object().shape({
   productId: yup.string().required(),
   description: yup.string().required(),
   variantType: yup.string().required(),
-  quantity_in_stock: yup.number().required(),
-  unit_price: yup.number().required(),
+  qunatityInStock: yup.number().required(),
+  unitPrice: yup.number().required(),
 });
+
+async function getVarientsForProductId(productId) {
+  try {
+    const res = await variantRepository.getVarientsForProduct(productId);
+    return generateOutput(200, "Variants fetched succesfully!", {
+      variants: res.rows,
+    });
+  } catch (error) {
+    return generateOutput(500, "Internal Sever error", { error });
+  }
+}
 
 async function getVariant(variantId) {
   try {
@@ -41,39 +52,13 @@ async function addVariant(values) {
     return generateOutput("Validation Error", 400, { error: error.errors });
   }
   try {
-    const res = await variantRepository.getVaraintByType(values.variantType);
-    if (res.rowCount !== 0) {
-      return generateOutput(400, "Variant Already Exists");
-    } else {
-      const data = {
-        variantId: uuid.v4(),
-        ...values,
-      };
-      const result = await variantRepository.addVariant(data);
-      return generateOutput(201, "Variant added succesfully!", {
-        variant: data,
-      });
-    }
-  } catch (error) {
-    if (error instanceof InternalServerErrorException) {
-      // Internal server error exception
-
-      return generateOutput(500, "Error in adding the variant", error.message);
-    }
-    return generateOutput(
-      400,
-      "Error in adding the variant",
-      "An error occured!"
-    );
-  }
-  const variant = {
-    id: uuid.v4(),
-    type: values.type,
-  };
-  try {
-    const res = await variantRepository.addVariant(variant);
+    const data = {
+      variantId: uuid.v4(),
+      ...values,
+    };
+    const result = await variantRepository.addVariant(data);
     return generateOutput(201, "Variant added succesfully!", {
-      variant,
+      variant: data,
     });
   } catch (error) {
     if (error instanceof InternalServerErrorException) {
@@ -138,4 +123,5 @@ module.exports = {
   addVariant,
   updateVariant,
   getVariant,
+  getVarientsForProductId,
 };

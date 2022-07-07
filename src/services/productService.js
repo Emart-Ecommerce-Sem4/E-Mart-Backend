@@ -2,6 +2,7 @@ const uuid = require("uuid");
 const yup = require("yup");
 
 const productRepository = require("../repositories/productRepository");
+const imageRepository = require("../repositories/imageRepository");
 const generateOutput = require("../utils/outputFactory");
 const {
   InternalServerErrorException,
@@ -38,6 +39,11 @@ async function addProduct(values) {
   };
   try {
     const result = await productRepository.addProduct(product);
+    const resultImages = await imageRepository.addImagesToProduct(
+      product.id,
+      values.images
+    );
+
     return generateOutput(201, "Product Added Succesfully", {
       product: product,
     });

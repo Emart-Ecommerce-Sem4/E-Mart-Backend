@@ -3,6 +3,18 @@ const {
   InternalServerErrorException,
 } = require("../exceptions/InternalServerErrorException");
 
+async function getVarientsForProduct(productId) {
+  try {
+    const res = await pool.query(
+      "SELECT * FROM variant WHERE product_id = $1",
+      [productId]
+    );
+    return res;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
+
 async function getVaraintByType(type) {
   try {
     const res = await pool.query(
@@ -60,4 +72,5 @@ module.exports = {
   getVaraintByType,
   getVaraintById,
   updateVariant,
+  getVarientsForProduct,
 };
