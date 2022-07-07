@@ -87,9 +87,29 @@ try {
 
   async  function  getOdersDetailsForReport(year,category_id,product_id){
     try {
-      const years = await pool.query("select date_part('month',order_date) as month , count(order_id) as no_of_orders from user_orders where order_status=$1 and category_id=$2 and product_id=$3 and date_part('year',order_date)=$4 group by date_part('month',order_date)",["DELIVERED",category_id,product_id,year])
+      
+      const res = await pool.query("select date_part('month',u.order_date) as month , count(u.order_id) as no_of_orders from  user_orders u left outer join order_items o on u.order_id= o.order_id left outer join product p on p.product_id=o.product_id where u.order_status=$1 and p.category_id=$2 and p.product_id=$3 and date_part('year',u.order_date)=$4 group by date_part('month',u.order_date)",["DELIVERED",category_id,product_id,year])
+      console.log(res);
+      return res;
     } catch (error) {
+     
       throw new InternalServerErrorException();
     }
   }
-  module.exports = {getTotalSalesAndOderDetails,getQuaterlySalesReport,getYears,getOdersDetailsForReport,getProductsAccordingToCategory}
+  async function getCategoryWithMostOrders(year) {
+    try {
+      const  res =await pool.query("select count(u.order_id) as total_orders,c.category_name from  user_orders u left outer join order_items o on u.order_id=o.order_id left outer join product p on p.product_id=o.product_id left outer join category c on c.category_id=p.category_id where date_part('year',u.order_date)=$1 and u.order_status=$2  group by c.category_id",[year,"DELIVERED"]);
+      return res;
+    } catch (error) {
+      console.log(error)
+      throw new InternalServerErrorException();
+    }
+  }
+  async function getToTenProductWithSales(year,fromMonth,toMonth) {
+    try {
+      const  res  = await pool.query("select sum(u.total_price) as sales,p.product_name,c.category_name,count(order_id) as total_orders")
+    } catch (error) {
+      
+    }
+  }
+  module.exports = {getTotalSalesAndOderDetails,getQuaterlySalesReport,getYears,getOdersDetailsForReport,getProductsAccordingToCategory,getCategoryWithMostOrders}

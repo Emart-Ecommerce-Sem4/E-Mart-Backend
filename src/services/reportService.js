@@ -57,14 +57,29 @@ async function getProductsAccordingToCategory(category_id) {
 
 async function getOdersDetailsForReport(year,category_id,product_id) {
     try {
+       
         const res = await reportRepository.getOdersDetailsForReport(year,category_id,product_id);
         return generateOutput(200,"order details fetched successfully",{
-            products:res.rows
+            orders:res.rows
         });
     } catch (error) {
+       
         return generateOutput(500, "Error occured while fetch order details", {
             error,
           });
     }
 }
-  module.exports={getTotalSalesReport,getQuaterlySalesReport,getYears,getProductsAccordingToCategory,getOdersDetailsForReport}
+async  function getCategoryWithMostOrders(year) {
+    try {
+        const res =await reportRepository.getCategoryWithMostOrders(year);
+        return generateOutput(200,"order details fetched successfully",{
+            orders:res.rows
+        });
+    } catch (error) {
+       
+        return generateOutput(500, "Error occured while fetch order details", {
+            error,
+          });
+    }
+}
+  module.exports={getTotalSalesReport,getQuaterlySalesReport,getYears,getProductsAccordingToCategory,getOdersDetailsForReport,getCategoryWithMostOrders}
