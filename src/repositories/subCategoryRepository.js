@@ -6,7 +6,7 @@ const {
 async function getSubCategoriesForParentId(parentId) {
   try {
     const res = await pool.query(
-      "SELECT * from sub_category WHERE parent_category_id = $1",
+      "SELECT * from sub_category WHERE category_id = $1",
       [parentId]
     );
     return res;
@@ -29,7 +29,7 @@ async function getSubCategoryByName(name) {
 async function addSubCategory(values) {
   try {
     const res = await pool.query("INSERT INTO sub_category VALUES ($1,$2,$3)", [
-      values.id,
+      values.sub_category_id,
       values.categoryId,
       values.name,
     ]);

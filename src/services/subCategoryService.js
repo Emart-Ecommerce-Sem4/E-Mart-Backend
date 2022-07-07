@@ -41,7 +41,7 @@ async function addSubCategory(values) {
     return generateOutput(400, "Error in reading the database", error);
   }
   const category = {
-    id: uuid.v4(),
+    sub_category_id: uuid.v4(),
     ...values,
   };
   try {
