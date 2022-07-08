@@ -58,11 +58,18 @@ async function addVariant(values) {
 async function updateVariant(values) {
   try {
     const res = await pool.query(
-      "UPDATE variant SET variant_type =$1 WHERE variant_id=$2",
-      [values.type, values.id]
+      "UPDATE variant SET variant_type = $1,description = $2, quantity_in_stock = $3,unit_price = $4 WHERE variant_id=$5",
+      [
+        values.variantType,
+        values.description,
+        values.quantityInStock,
+        values.unitPrice,
+        values.variantId,
+      ]
     );
-    return res;
+    return true;
   } catch (error) {
+    console.log(error);
     throw new InternalServerErrorException();
   }
 }

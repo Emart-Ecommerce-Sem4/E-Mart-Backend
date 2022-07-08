@@ -8,7 +8,7 @@ const {
 
 async function getTotalSalesReport(year) {
     try {
-      const res = await reportRepository.getTotalSalesAndOderDetails(year)
+      const res = await reportRepository.getTotalSales(year)
       return generateOutput(200, "Report fetched succesfully!", {
         salesReport: res,
       });
@@ -42,9 +42,9 @@ async  function getYears(){
           });
     }
 }
-async function getProductsAccordingToCategory(category_id) {
+async function getProductsAccordingToSubCategory(sub_category_id) {
     try {
-        const res = await reportRepository.getProductsAccordingToCategory(category_id);
+        const res = await reportRepository.getProductsAccordingToSubCategory(sub_category_id);
         return generateOutput(200,"products fetvhed successfully",{
             products:res.rows
         });
@@ -53,6 +53,18 @@ async function getProductsAccordingToCategory(category_id) {
             error,
           });
     }
+}
+async function getSubCategoryAccordingtoCategory(sub_category_id) {
+  try {
+      const res = await reportRepository.getSubCategoruAccordingToCategory(sub_category_id);
+      return generateOutput(200,"products fetvhed successfully",{
+          subcategory:res.rows
+      });
+  } catch (error) {
+      return generateOutput(500, "Error occured while fetch products", {
+          error,
+        });
+  }
 }
 
 async function getOdersDetailsForReport(year,category_id,product_id) {
@@ -73,7 +85,7 @@ async  function getCategoryWithMostOrders(year) {
     try {
         const res =await reportRepository.getCategoryWithMostOrders(year);
         return generateOutput(200,"order details fetched successfully",{
-            orders:res.rows
+            category:res.rows
         });
     } catch (error) {
        
@@ -82,4 +94,4 @@ async  function getCategoryWithMostOrders(year) {
           });
     }
 }
-  module.exports={getTotalSalesReport,getQuaterlySalesReport,getYears,getProductsAccordingToCategory,getOdersDetailsForReport,getCategoryWithMostOrders}
+  module.exports={getTotalSalesReport,getQuaterlySalesReport,getYears,getProductsAccordingToSubCategory,getOdersDetailsForReport,getSubCategoryAccordingtoCategory,getCategoryWithMostOrders}

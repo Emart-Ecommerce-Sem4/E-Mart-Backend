@@ -26,6 +26,11 @@ const signUpSchema = yup.object().shape({
   address_line_1: yup.string().required(),
   address_line_2: yup.string().required(),
   email: yup.string().email().required(),
+  birthday: yup.date().required(),
+  phoneNumber: yup.string().required(),
+  addressLine1: yup.string().required(),
+  addressLine2: yup.string().required(),
+  postalCode: yup.string().required(),
   city: yup.string().required(),
   district:yup.string().required(),
   postal_code:yup.string().required(),
@@ -200,7 +205,7 @@ async function registerUser(values) {
             delete user.password;
             resolve(
               generateOutput(201, "User created sucessfully!", {
-                user: { user },
+                user: user,
                 token: generateAccessToken(user),
               })
             );

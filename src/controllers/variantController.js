@@ -20,9 +20,8 @@ router.post("/add", async (req, res) => {
   res.status(200);
   res.send(response);
 });
-router.put("/update/:ID", authenticateToken, async (req, res) => {
-  const data = { id: req.params.ID, ...req.body };
-  const response = await variantService.updateVariant(data);
+router.put("/update", async (req, res) => {
+  const response = await variantService.updateVariant(req.body);
   res.status(200);
   res.send(response);
 });

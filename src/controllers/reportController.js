@@ -22,11 +22,17 @@ router.get("/totalsales/:year", async (req, res) => {
     res.status(200);
     res.send(response);
   })
-  router.get("/getproducts/:category_id", async (req,res)=>{
-    const response = await reportservice.getProductsAccordingToCategory(req.params.category_id);
+  router.get("/getproducts/:sub_category_id", async (req,res)=>{
+    const response = await reportservice.getProductsAccordingToSubCategory(req.params.sub_category_id);
     res.status(200);
     res.send(response);
   });
+  router.get("/getsubcategories/:category_id", async (req,res)=>{
+    const response = await reportservice.getSubCategoryAccordingtoCategory(req.params.category_id);
+    res.status(200);
+    res.send(response);
+  });
+
   router.get("/getorderdeilsforinteres/:year/:category_id/:product_id", async (req,res)=>{
     const response = await reportservice.getOdersDetailsForReport(req.params.year,req.params.category_id,req.params.product_id);
     res.status(200);

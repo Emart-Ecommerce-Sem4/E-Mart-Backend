@@ -3,7 +3,7 @@ const {
   InternalServerErrorException,
 } = require("../exceptions/InternalServerErrorException");
 
-async function getTotalSalesAndOderDetails(year) {
+async function getTotalSales(year) {
   var result =[]
     try {
       const totalSales = await pool.query(
@@ -17,58 +17,85 @@ async function getTotalSalesAndOderDetails(year) {
         result.push(element);
        });
     } catch (error) {
-     
+      console.log(error)
+      
       throw new InternalServerErrorException();
     }
     
 
-    try {
-      const totalOdersOnStatus = await pool.query(
-
-        "SELECT order_status,count(order_id) AS total_orders_on_status FROM user_orders where date_part('year',order_date)=$1 GROUP BY order_status",
-        [year]
-      );
-
-      totalOdersOnStatus.rows.forEach(element => {
-        result.push(element);
-      });
-  
     
-    } catch (error) {
-     
-      throw new InternalServerErrorException();
-    }
+    
     try {
-      const totalOder = await pool.query(
-
-        "SELECT count(order_id) AS total_orders FROM user_orders where date_part('year',order_date)=$1",
-        [year]
-      );
-      totalOder.rows.forEach(element => {
-        result.push(element);
-      });
-   
-    } catch (error) {
-     
-      throw new InternalServerErrorException();
-    }
-    try {
-      const odersOnDeliveryMethods= await pool.query("select delivery_method, count(order_id) as total_orders_on_delivery_method from user_orders where date_part('year',order_date)=$1 GROUP BY delivery_method");
-      odersOnDeliveryMethods.rows.forEach(element=>{
+      const salesOnDeliveryMethods= await pool.query("select delivery_method, sum(total_price) as total_sales from user_orders where date_part('year',order_date)=$1 GROUP BY delivery_method",[year]);
+      salesOnDeliveryMethods.rows.forEach(element=>{
         result.push(element);
       })
 
       return result;
     } catch (error) {
+      console.log(error)
       throw new InternalServerErrorException();
     }
 
   }
 
 
+  // async function getTotalOderDetails(year) {
+  //   var result =[]
+  //     try {
+  //       const totalOdersOnStatus = await pool.query(
+  
+  //         "SELECT order_status,count(order_id) AS total_orders_on_status FROM user_orders where date_part('year',order_date)=$1 GROUP BY order_status",
+  //         [year]
+  //       );
+  
+  //       totalOdersOnStatus.rows.forEach(element => {
+  //         result.push(element);
+  //       });
+    
+      
+  //     } catch (error) {
+  //       console.log(error)
+       
+  //       throw new InternalServerErrorException();
+  //     }
+  //     try {
+  //       const totalOder = await pool.query(
+  
+  //         "SELECT count(order_id) AS total_orders FROM user_orders where date_part('year',order_date)=$1",
+  //         [year]
+  //       );
+  //       totalOder.rows.forEach(element => {
+  //         result.push(element);
+  //       });
+     
+  //     } catch (error) {
+  //       console.log(error)
+       
+  //       throw new InternalServerErrorException();
+  //     }
+     
+  //     try {
+  //       const salesOnDeliveryMethods= await pool.query("select delivery_method, sum(total_price) as total_sales from user_orders where date_part('year',order_date)=$1 GROUP BY delivery_method",[year]);
+  //       salesOnDeliveryMethods.rows.forEach(element=>{
+  //         result.push(element);
+  //       })
+  
+  //       return result;
+  //     } catch (error) {
+  //       console.log(error)
+  //       throw new InternalServerErrorException();
+  //     }
+  
+  //   }
+
+
+
+
+
   async function getQuaterlySalesReport(year){
     try {
-      const sales = await pool.query("SELECT date_part('quarter',order_date) as quater, sum(total_price) as sales from user_orders where order_status=$1 AND order_date::text LIKE $2  group by date_part('quarter',order_date) ",["DELIVERED",year+'%']);
+      const sales = await pool.query("SELECT date_part('quarter',order_date) as quater, sum(total_price) as sales,avg(total_price) as average from user_orders where order_status=$1 AND date_part('year',order_date)=$1  group by date_part('quarter',order_date) ",["DELIVERED",year]);
       return sales;
     } catch (error) {
       throw new InternalServerErrorException();
@@ -86,15 +113,22 @@ async function getTotalSalesAndOderDetails(year) {
     }
   }
 
-async function getProductsAccordingToCategory(category_id){
+async function getProductsAccordingToSubCategory(sub_category_id){
 try {
-  const products = await pool.query("select product_id,name from product where category_id=$1",[category_id]);
+  const products = await pool.query("select product_id,title from product where sub_category_id=$1",[sub_category_id]);
   return products;
 } catch (error) {
   throw new InternalServerErrorException();
 }
 }
-
+async function getSubCategoruAccordingToCategory(category_id){
+  try {
+    const products = await pool.query("select sub_category_id,name from product where category_id=$1",[category_id]);
+    return products;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+  }
   async  function  getOdersDetailsForReport(year,category_id,product_id){
     try {
       
@@ -122,4 +156,4 @@ try {
       
     }
   }
-  module.exports = {getTotalSalesAndOderDetails,getQuaterlySalesReport,getYears,getOdersDetailsForReport,getProductsAccordingToCategory,getCategoryWithMostOrders}
+  module.exports = {getTotalSales,getQuaterlySalesReport,getYears,getOdersDetailsForReport,getProductsAccordingToSubCategory,getCategoryWithMostOrders,getSubCategoruAccordingToCategory}
