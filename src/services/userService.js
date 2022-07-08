@@ -178,7 +178,7 @@ async function registerUser(values) {
             delete user.password;
             resolve(
               generateOutput(201, "User created sucessfully!", {
-                user: { user },
+                user: user,
                 token: generateAccessToken(user),
               })
             );
