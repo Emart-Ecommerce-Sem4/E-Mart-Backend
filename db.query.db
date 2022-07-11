@@ -96,6 +96,10 @@ CREATE TABLE user_orders (
                         REFERENCES user_account (user_id)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE,   
+                    FOREIGN KEY (variant_id)
+                        REFERENCES variant (variant_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,   
                     check (order_status in ('PLACED','SHIPPED','DELIVERED','REJECTED','REFUNDED')),
                     check (payment_method in ('CASH_ON_DELIVERY','CARD_PAYMENT','CASH_PAYMENT')),
                     check (delivery_method in ('STORE_PICKUP','DELIVERY'))               
@@ -112,3 +116,11 @@ CREATE TABLE product_images (
                             ON DELETE CASCADE
                             ON UPDATE CASCADE
 );
+
+
+
+
+
+//views
+
+create view full_product_order_view as select c.category_name,s.name,p.title,v.variant_type,u.order_id,u.order_date,u.total_price,u.order_status,u.delivery_method from user_orders u left outer join variant v on u.variant_id=v.variant_id left outer join product p on p.product_id=v.product_id left outer join sub_category s on s.sub_category_id=p.sub_category_id left outer join category c on c.category_id=s.category_id

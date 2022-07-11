@@ -26,7 +26,7 @@ async function getTotalSales(year) {
     
     
     try {
-      const salesOnDeliveryMethods= await pool.query("select delivery_method, sum(total_price) as total_sales from user_orders where date_part('year',order_date)=$1 GROUP BY delivery_method",[year]);
+      const salesOnDeliveryMethods= await pool.query("select delivery_method, sum(total_price) as total_sales from user_orders where date_part('year',order_date)=$1 and order_status=$2 GROUP BY delivery_method",[year,"DELIVERED"]);
       salesOnDeliveryMethods.rows.forEach(element=>{
         result.push(element);
       })
@@ -40,54 +40,53 @@ async function getTotalSales(year) {
   }
 
 
-  // async function getTotalOderDetails(year) {
-  //   var result =[]
-  //     try {
-  //       const totalOdersOnStatus = await pool.query(
+  async function getTotalOdersReport(year) {
+    var result =[]
+      try {
+        const totalOdersOnStatus = await pool.query(
+          "SELECT order_status,count(order_id) AS total_orders_on_status FROM user_orders where date_part('year',order_date)=$1 GROUP BY order_status",
+          [year]
+        );
   
-  //         "SELECT order_status,count(order_id) AS total_orders_on_status FROM user_orders where date_part('year',order_date)=$1 GROUP BY order_status",
-  //         [year]
-  //       );
-  
-  //       totalOdersOnStatus.rows.forEach(element => {
-  //         result.push(element);
-  //       });
+        totalOdersOnStatus.rows.forEach(element => {
+          result.push(element);
+        });
     
       
-  //     } catch (error) {
-  //       console.log(error)
+      } catch (error) {
+        console.log(error)
        
-  //       throw new InternalServerErrorException();
-  //     }
-  //     try {
-  //       const totalOder = await pool.query(
+        throw new InternalServerErrorException();
+      }
+      try {
+        const totalOder = await pool.query(
   
-  //         "SELECT count(order_id) AS total_orders FROM user_orders where date_part('year',order_date)=$1",
-  //         [year]
-  //       );
-  //       totalOder.rows.forEach(element => {
-  //         result.push(element);
-  //       });
+          "SELECT count(order_id) AS total_orders FROM user_orders where date_part('year',order_date)=$1",
+          [year]
+        );
+        totalOder.rows.forEach(element => {
+          result.push(element);
+        });
      
-  //     } catch (error) {
-  //       console.log(error)
+      } catch (error) {
+        console.log(error)
        
-  //       throw new InternalServerErrorException();
-  //     }
+        throw new InternalServerErrorException();
+      }
      
-  //     try {
-  //       const salesOnDeliveryMethods= await pool.query("select delivery_method, sum(total_price) as total_sales from user_orders where date_part('year',order_date)=$1 GROUP BY delivery_method",[year]);
-  //       salesOnDeliveryMethods.rows.forEach(element=>{
-  //         result.push(element);
-  //       })
+      try {
+        const salesOnDeliveryMethods= await pool.query("select delivery_method, count(order_id) as total_Orders_on_delevery_method from user_orders where date_part('year',order_date)=$1 GROUP BY delivery_method",[year]);
+        salesOnDeliveryMethods.rows.forEach(element=>{
+          result.push(element);
+        })
   
-  //       return result;
-  //     } catch (error) {
-  //       console.log(error)
-  //       throw new InternalServerErrorException();
-  //     }
+        return result;
+      } catch (error) {
+        console.log(error)
+        throw new InternalServerErrorException();
+      }
   
-  //   }
+    }
 
 
 
@@ -95,9 +94,10 @@ async function getTotalSales(year) {
 
   async function getQuaterlySalesReport(year){
     try {
-      const sales = await pool.query("SELECT date_part('quarter',order_date) as quater, sum(total_price) as sales,avg(total_price) as average from user_orders where order_status=$1 AND date_part('year',order_date)=$1  group by date_part('quarter',order_date) ",["DELIVERED",year]);
+      const sales = await pool.query("SELECT date_part('quarter',order_date) as quater, sum(total_price) as sales,avg(total_price) as average from user_orders where order_status=$1 AND date_part('year',order_date)=$2  group by date_part('quarter',order_date) ",["DELIVERED",year]);
       return sales;
     } catch (error) {
+      console.log(error)
       throw new InternalServerErrorException();
     }
 
@@ -142,18 +142,65 @@ async function getSubCategoruAccordingToCategory(category_id){
   }
   async function getCategoryWithMostOrders(year) {
     try {
-      const  res =await pool.query("select count(u.order_id) as total_orders,c.category_name from  user_orders u left outer join order_items o on u.order_id=o.order_id left outer join product p on p.product_id=o.product_id left outer join category c on c.category_id=p.category_id where date_part('year',u.order_date)=$1 and u.order_status=$2  group by c.category_id",[year,"DELIVERED"]);
+      const  res =await pool.query("select category_name,count(order_id) as orders,  round(count(order_id)/(select count(order_id) from full_product_order_view where order_status=$1 AND date_part('year',order_date)=$2)*100) as percentage from full_product_order_view where order_status=$1 AND date_part('year',order_date)=$2 group by category_name",["DELIVERED",year]);
       return res;
     } catch (error) {
       console.log(error)
       throw new InternalServerErrorException();
     }
   }
-  async function getToTenProductWithSales(year,fromMonth,toMonth) {
+  async function getmostSalesAccordingToTime(year,fromMonth,toMonth) {
+    
+    var result =[]
     try {
-      const  res  = await pool.query("select sum(u.total_price) as sales,p.product_name,c.category_name,count(order_id) as total_orders")
-    } catch (error) {
       
+      const  res  = await pool.query("select max_values.category_name, max(max_values.sales),max_values.percentage from (select category_name, sum(total_price) as sales,round((total_price/sum(total_price))*100) as percentage  from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by category_name,total_price) as max_values group by category_name,percentage",['DELIVERED',year,fromMonth,toMonth] )
+      res.rows.forEach(element => {
+        result.push(element);
+      });
+      
+    } catch (error) {
+      console.log(error)
+      throw new InternalServerErrorException();
     }
+
+    try {
+      
+      const  res  = await pool.query("select max_values.title, max(max_values.sales),max_values.percentage  from (select title, sum(total_price) as sales,round((total_price/sum(total_price))*100) as percentage from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by title,total_price) as max_values group by title,percentage",['DELIVERED',year,fromMonth,toMonth] )
+      res.rows.forEach(element => {
+        result.push(element);
+      });
+     
+    } catch (error) {
+      console.log(error)
+      throw new InternalServerErrorException();
+    }
+    try {
+      
+      const  res  = await pool.query("select max_values.name, max(max_values.sales),max_values.percentage  from (select name, sum(total_price) as sales,round((total_price/sum(total_price))*100) as percentage from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by name,total_price) as max_values group by name,percentage",['DELIVERED',year,fromMonth,toMonth] )
+      res.rows.forEach(element => {
+        result.push(element);
+      });
+     
+    } catch (error) {
+      console.log(error)
+      throw new InternalServerErrorException();
+    }
+
+    try {
+      
+      const  res  = await pool.query("select  max_values.variant_type, max(max_values.sales),max_values.percentage  from (select variant_type, sum(total_price) as sales,round((total_price/sum(total_price))*100) as percentage from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by variant_type,total_price) as max_values group by variant_type,percentage",['DELIVERED',year,fromMonth,toMonth] )
+      res.rows.forEach(element => {
+        result.push(element);
+      });
+      
+     return result;
+
+    } catch (error) {
+      console.log(error)
+      throw new InternalServerErrorException();
+    }
+
+
   }
-  module.exports = {getTotalSales,getQuaterlySalesReport,getYears,getOdersDetailsForReport,getProductsAccordingToSubCategory,getCategoryWithMostOrders,getSubCategoruAccordingToCategory}
+  module.exports = {getmostSalesAccordingToTime,getTotalOdersReport,getTotalSales,getQuaterlySalesReport,getYears,getOdersDetailsForReport,getProductsAccordingToSubCategory,getCategoryWithMostOrders,getSubCategoruAccordingToCategory}

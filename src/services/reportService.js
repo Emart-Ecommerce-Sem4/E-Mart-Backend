@@ -18,6 +18,20 @@ async function getTotalSalesReport(year) {
       });
     }
   }
+
+
+  async function getTotalOdersReport(year) {
+    try {
+      const res = await reportRepository.getTotalOdersReport(year)
+      return generateOutput(200, "Report fetched succesfully!", {
+        ordersReport: res,
+      });
+    } catch (error) {
+      return generateOutput(500, "Error occured while Report generate", {
+        error,
+      });
+    }
+  }
   async function getQuaterlySalesReport(year) {
     try {
       const res = await reportRepository.getQuaterlySalesReport(year)
@@ -94,4 +108,17 @@ async  function getCategoryWithMostOrders(year) {
           });
     }
 }
-  module.exports={getTotalSalesReport,getQuaterlySalesReport,getYears,getProductsAccordingToSubCategory,getOdersDetailsForReport,getSubCategoryAccordingtoCategory,getCategoryWithMostOrders}
+async  function getmostSalesAccordingToTime(year,fromMonth,toMonth) {
+  try {
+      const res =await reportRepository.getmostSalesAccordingToTime(year,fromMonth,toMonth);
+      return generateOutput(200,"Sales details fetched successfully",{
+          sales:res
+      });
+  } catch (error) {
+     
+      return generateOutput(500, "Error occured while fetch Sales details", {
+          error,
+        });
+  }
+}
+  module.exports={getmostSalesAccordingToTime,getTotalSalesReport,getQuaterlySalesReport,getYears,getProductsAccordingToSubCategory,getOdersDetailsForReport,getSubCategoryAccordingtoCategory,getCategoryWithMostOrders,getTotalOdersReport}

@@ -11,6 +11,18 @@ router.get("/totalsales/:year", async (req, res) => {
     res.send(response);
   });
 
+  router.get("/totalsalesaccordingtotime/:year/:frommonth/:tomonth", async (req, res) => {
+    const response = await reportservice.getmostSalesAccordingToTime(req.params.year,req.params.frommonth,req.params.tomonth);
+    res.status(200);
+    res.send(response);
+  });
+
+  router.get("/totalorders/:year", async (req, res) => {
+    const response = await reportservice.getTotalOdersReport(req.params.year);
+    res.status(200);
+    res.send(response);
+  });
+
   router.get("/quaterlysales/:year", async (req, res) => {
     const response = await reportservice.getQuaterlySalesReport(req.params.year);
     res.status(200);
