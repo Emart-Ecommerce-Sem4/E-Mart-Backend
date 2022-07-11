@@ -65,7 +65,7 @@ CREATE TABLE  product (
 CREATE TABLE  variant(
     variant_id VARCHAR(50) PRIMARY KEY ,
     product_id VARCHAR(50),
-    description VARCHAR(50),
+    description TEXT,
     variant_type VARCHAR(50),
     quantity_in_stock INTEGER NOT NULL,
     unit_price NUMERIC(10,2),
