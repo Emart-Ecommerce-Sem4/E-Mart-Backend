@@ -16,6 +16,17 @@ const productAddSchema = yup.object().shape({
   subCategoryId: yup.string().required(),
 });
 
+async function getProductImages(productId) {
+  try {
+    const res = await imageRepository.getAllImagesOfProduct(productId);
+    return generateOutput(200, "Images fetched succesfully!", {
+      images: res.rows,
+    });
+  } catch (error) {
+    return generateOutput(500, "Internal Server Error!", { error });
+  }
+}
+
 async function getProduct(id) {
   try {
     const res = await productRepository.getProductById(id);
@@ -125,4 +136,10 @@ async function updateProduct(values) {
     );
   }
 }
-module.exports = { addProduct, updateProduct, getAllProducts, getProduct };
+module.exports = {
+  addProduct,
+  updateProduct,
+  getAllProducts,
+  getProduct,
+  getProductImages,
+};
