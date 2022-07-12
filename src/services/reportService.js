@@ -121,4 +121,18 @@ async  function getmostSalesAccordingToTime(year,fromMonth,toMonth) {
         });
   }
 }
-  module.exports={getmostSalesAccordingToTime,getTotalSalesReport,getQuaterlySalesReport,getYears,getProductsAccordingToSubCategory,getOdersDetailsForReport,getSubCategoryAccordingtoCategory,getCategoryWithMostOrders,getTotalOdersReport}
+
+async  function getOrdersOverview(year,category,subCategory,product) {
+  try {
+      const res =await reportRepository.getOrdersOverview(year,category,subCategory,product);
+      return generateOutput(200,"order details fetched successfully",{
+          orders:res.rows
+      });
+  } catch (error) {
+     console.log(error)
+      return generateOutput(500, "Error occured while fetch order details", {
+          error,
+        });
+  }
+}
+  module.exports={getOrdersOverview,getmostSalesAccordingToTime,getTotalSalesReport,getQuaterlySalesReport,getYears,getProductsAccordingToSubCategory,getOdersDetailsForReport,getSubCategoryAccordingtoCategory,getCategoryWithMostOrders,getTotalOdersReport}

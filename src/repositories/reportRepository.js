@@ -203,4 +203,15 @@ async function getSubCategoruAccordingToCategory(category_id){
 
 
   }
-  module.exports = {getmostSalesAccordingToTime,getTotalOdersReport,getTotalSales,getQuaterlySalesReport,getYears,getOdersDetailsForReport,getProductsAccordingToSubCategory,getCategoryWithMostOrders,getSubCategoruAccordingToCategory}
+
+  async function getOrdersOverview(year,category,subCategory,product) {
+    try {
+    
+      const res = await pool.query("select date_part('month',order_date) as month ,count(order_id) as order_count from full_product_order_view where order_status=$1 and date_part('year',order_date)=$2 and category_name=$3 and name=$4 and title =$5 group by date_part('month',order_date)" ,["DELIVERED",year,category,subCategory,product])
+      return res;
+    } catch (error) {
+      console.log(error)
+      throw new InternalServerErrorException();
+    }
+  }
+  module.exports = {getOrdersOverview,getmostSalesAccordingToTime,getTotalOdersReport,getTotalSales,getQuaterlySalesReport,getYears,getOdersDetailsForReport,getProductsAccordingToSubCategory,getCategoryWithMostOrders,getSubCategoruAccordingToCategory}

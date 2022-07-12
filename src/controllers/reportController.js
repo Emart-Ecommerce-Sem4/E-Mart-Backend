@@ -55,6 +55,11 @@ router.get("/totalsales/:year", async (req, res) => {
     res.status(200);
     res.send(response);
   });
+  router.get("/getordersoverview/:year/:category/:subcategory/:product", async (req,res)=>{
+    const response = await reportservice.getOrdersOverview(req.params.year,req.params.category,req.params.subcategory,req.params.product);
+    res.status(200);
+    res.send(response);
+  });
 
 
   module.exports=router;
