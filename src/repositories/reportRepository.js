@@ -115,15 +115,17 @@ async function getTotalSales(year) {
 
 async function getProductsAccordingToSubCategory(sub_category_id){
 try {
-  const products = await pool.query("select product_id,title from product where sub_category_id=$1",[sub_category_id]);
+  const products = await pool.query("select p.product_id,p.title from product p left outer join product_subcategory ps on p.product_id=ps.product_id where sub_category_id=$1",[sub_category_id]);
   return products;
 } catch (error) {
+  console.log(error)
   throw new InternalServerErrorException();
 }
 }
 async function getSubCategoruAccordingToCategory(category_id){
   try {
-    const products = await pool.query("select sub_category_id,name from product where category_id=$1",[category_id]);
+    console.log(category_id)
+    const products = await pool.query("select s.sub_category_id,s.name from sub_category s left outer join category_subcategory cs on cs.sub_category_id=s.sub_category_id where category_id=$1",[category_id]);
     return products;
   } catch (error) {
     throw new InternalServerErrorException();
