@@ -108,11 +108,13 @@ async function getOrdersAccordingToStatus(status) {
 }
 
 async function addOrder(values) {
+
   try {
     await orderAddSchema.validate({
       ...values,
     });
   } catch (error) {
+    console.log(error);
     return generateOutput(400, "Validation Error", error.errors);
   }
   const order = {
@@ -120,6 +122,7 @@ async function addOrder(values) {
     ...values,
   };
   try {
+    
     const res = await orderRepository.addOrder(order);
     return generateOutput(201, "Order adder succesfully!", { order });
   } catch (error) {

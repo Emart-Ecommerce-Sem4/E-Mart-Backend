@@ -24,9 +24,7 @@ const signUpSchema = yup.object().shape({
   birthday: yup.date().required(),
   email: yup.string().email().required(),
   birthday: yup.date().required(),
-  phoneNumber: yup.string().required(),
-  addressLine1: yup.string().required(),
-  addressLine2: yup.string().required(),
+
   postalCode: yup.string().required(),
   city: yup.string().required(),
   district: yup.string().required(),
