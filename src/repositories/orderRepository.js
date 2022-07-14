@@ -77,11 +77,12 @@ async function getOrdersAccordingToStatus(status) {
 
 async function addOrder(values) {
   try {
-    const res = await pool.query(
+    await pool.query("BEGIN");
+    const res1 = await pool.query(
       "INSERT INTO user_orders (order_id,user_id,variant_id,order_date,item_count,delivery_method,order_status,comments,payment_method,total_price) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
       [
         values.id,
-        values.userId,   
+        values.userId,
         values.variantId,
         values.orderDate,
         values.itemCount,
@@ -93,10 +94,14 @@ async function addOrder(values) {
       ]
     );
 
-    
-   
+    const res2 = await pool.query(
+      "UPDATE variant SET quantity_in_stock = quantity_in_stock - $1 WHERE variant_id = $2",
+      [values.itemCount, values.variantId]
+    );
+    await pool.query("COMMIT");
   } catch (error) {
-   
+    console.log(error);
+    await pool.query("ROLLBACK");
     throw InternalServerErrorException();
   }
 }
