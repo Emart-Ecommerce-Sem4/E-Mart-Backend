@@ -77,7 +77,11 @@ async function getOrdersAccordingToStatus(status) {
 
 async function addOrder(values) {
   try {
+    console.log( values.orderDate,
+      values.itemCount,
+      values.deliveryMethod);
     await pool.query("BEGIN");
+    
     const res1 = await pool.query(
       "INSERT INTO user_orders (order_id,user_id,variant_id,order_date,item_count,delivery_method,order_status,comments,payment_method,total_price) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
       [
