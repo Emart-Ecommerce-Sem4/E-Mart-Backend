@@ -126,7 +126,7 @@ CREATE TABLE user_orders (
                         REFERENCES variant (variant_id)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE,   
-                    check (order_status in ('PLACED','SHIPPED','DELIVERED','REJECTED','REFUNDED')),
+                    check (order_status in ('PENDING','PLACED','SHIPPED','DELIVERED','REJECTED','REFUNDED')),
                     check (payment_method in ('CASH_ON_DELIVERY','CARD_PAYMENT','CASH_PAYMENT')),
                     check (delivery_method in ('STORE_PICKUP','DELIVERY'))               
 );
@@ -148,4 +148,30 @@ CREATE TABLE product_images (
 
 
 //views
+
 create view full_product_order_view as select c.category_name,s.name,p.title,v.variant_type,u.order_id,u.order_date,u.total_price,u.order_status,u.delivery_method from user_orders u left outer join variant v on u.variant_id=v.variant_id left outer join product p on p.product_id=v.product_id left outer join  product_subcategory ps on ps.product_id=p.product_id left outer join  sub_category s on s.sub_category_id=ps.sub_category_id left outer join category_subcategory cs on cs.sub_category_id=s.sub_category_id left outer join  category c on c.category_id=cs.category_id
+
+
+create view full_product_order_view as select c.category_name,s.name,p.title,v.variant_type,u.order_id,u.order_date,u.total_price,u.order_status,u.delivery_method from user_orders u left outer join variant v on u.variant_id=v.variant_id left outer join product p on p.product_id=v.product_id left outer join sub_category s on s.sub_category_id=p.sub_category_id left outer join category c on c.category_id=s.category_id
+
+
+CREATE OR REPLACE FUNCTION check_orders(variantId text) 
+RETURNS void
+LANGUAGE plpgsql as $$
+DECLARE
+    f record;
+    available_quantity int;
+BEGIN
+    select quantity_in_stock into available_quantity FROM variant WHERE variant_id = variantId;
+    for f in select order_id,item_count from user_orders
+        where variant_id = variantId AND order_status = 'PENDING'
+    loop
+        if available_quantity >= f.item_count then
+            UPDATE user_orders SET order_status = 'PLACED' WHERE order_id = f.order_id;
+            UPDATE variant SET quantity_in_stock = quantity_in_stock - f.item_count;
+            available_quantity = available_quantity - f.item_count;
+        end if;
+    end loop;
+END;
+$$;
+
