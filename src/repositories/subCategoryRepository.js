@@ -6,7 +6,7 @@ const {
 async function getSubCategoriesForParentId(parentId) {
   try {
     const res = await pool.query(
-      "SELECT * from sub_category WHERE category_id = $1",
+      "SELECT * from sub_category s left outer join category_subcategory cs on cs.sub_category_id=s.sub_category_id WHERE category_id = $1",
       [parentId]
     );
     return res;

@@ -27,13 +27,10 @@ const signUpSchema = yup.object().shape({
   address_line_2: yup.string().required(),
   email: yup.string().email().required(),
   birthday: yup.date().required(),
-  phoneNumber: yup.string().required(),
-  addressLine1: yup.string().required(),
-  addressLine2: yup.string().required(),
+  
   postalCode: yup.string().required(),
   city: yup.string().required(),
   district:yup.string().required(),
-  postal_code:yup.string().required(),
   password: yup.string().required().min(8).max(15),
 });
 
@@ -128,16 +125,16 @@ async function registerUser(values) {
   try {
   
     await signUpSchema.validate({
-      first_name: values.first_name,
-      last_name: values.last_name,
+      first_name: values.firstName,
+      last_name: values.lastName,
       birthday: values.birthday,
-      phone_number: values.phone_number,
-      address_line_1: values.address_line_1,
-      address_line_2: values.address_line_2,
+      phone_number: values.phoneNumber,
+      address_line_1: values.addressLine1,
+      address_line_2: values.addressLine2,
       email: values.email,
       city: values.city,
       district:values.district,
-      postal_code:values.postal_code,
+      postalCode:values.postalCode,
       password: values.password,
     });
   } catch (error) {
@@ -188,16 +185,16 @@ async function registerUser(values) {
           }
           const user = {
             user_id: id,
-            first_name: values.first_name,
-            last_name: values.last_name,
+            firstName: values.firstName,
+            lastName: values.lastName,
             birthday: values.birthday,
-            phone_number: values.phone_number,
-            address_line_1: values.address_line_1,
-            address_line_2:values.address_line_2,
+            phoneNumber: values.phoneNumber,
+            addressLine1: values.addressLine1,
+            addressLine2:values.addressLine2,
             email: values.email,
             city: values.city,
             district:values.district,
-            postal_code:values.postal_code,
+            postal_code:values.postalCode,
             password: hash,
           };
           try {
