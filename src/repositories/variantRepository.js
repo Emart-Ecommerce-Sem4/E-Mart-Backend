@@ -67,6 +67,9 @@ async function updateVariant(values) {
         values.variantId,
       ]
     );
+    const resUpdate = await pool.query("SELECT * FROM check_orders($1)", [
+      values.variantId,
+    ]);
     return true;
   } catch (error) {
     console.log(error);
