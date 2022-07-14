@@ -16,6 +16,30 @@ const productAddSchema = yup.object().shape({
   subCategoryId: yup.string().required(),
 });
 
+async function getProductsForSubCategory(subCategoryId) {
+  try {
+    const res = await productRepository.getProductsForSubCategory(
+      subCategoryId
+    );
+    return generateOutput(200, "Products fetched succesfully!", {
+      products: res.rows,
+    });
+  } catch (error) {
+    return generateOutput(500, "Internal Server Error!", { error });
+  }
+}
+
+async function getProductsForCategory(categoryId) {
+  try {
+    const res = await productRepository.getProductsForCategory(categoryId);
+    return generateOutput(200, "Products fetched succesfully!", {
+      products: res.rows,
+    });
+  } catch (error) {
+    return generateOutput(500, "Internal Server Error!", { error });
+  }
+}
+
 async function getProductImages(productId) {
   try {
     const res = await imageRepository.getAllImagesOfProduct(productId);
@@ -145,4 +169,6 @@ module.exports = {
   getAllProducts,
   getProduct,
   getProductImages,
+  getProductsForCategory,
+  getProductsForSubCategory,
 };
