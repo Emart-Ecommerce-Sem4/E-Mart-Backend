@@ -6,7 +6,7 @@ const {
 async function getSubCategoriesForParentId(parentId) {
   try {
     const res = await pool.query(
-      "SELECT * from sub_category WHERE category_id = $1",
+      "SELECT * from sub_category WHERE sub_category_id IN (SELECT sub_category_id from category_subcategory WHERE category_id = $1)",
       [parentId]
     );
     return res;
@@ -17,9 +17,10 @@ async function getSubCategoriesForParentId(parentId) {
 
 async function getSubCategoryByName(name) {
   try {
-    const res = await pool.query("SELECT * from sub_category WHERE name = $1", [
-      name,
-    ]);
+    const res = await pool.query(
+      "SELECT * from category_subcategory WHERE name = $1",
+      [name]
+    );
     return res;
   } catch (error) {
     throw InternalServerErrorException();

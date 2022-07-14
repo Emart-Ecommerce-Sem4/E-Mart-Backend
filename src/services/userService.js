@@ -19,12 +19,9 @@ const signInSchema = yup.object().shape({
   password: yup.string().required().min(8).max(15),
 });
 const signUpSchema = yup.object().shape({
-  first_name: yup.string().required(),
-  last_name: yup.string().required(),
+  firstName: yup.string().required(),
+  lastName: yup.string().required(),
   birthday: yup.date().required(),
-  phone_number: yup.string().required(),
-  address_line_1: yup.string().required(),
-  address_line_2: yup.string().required(),
   email: yup.string().email().required(),
   birthday: yup.date().required(),
   phoneNumber: yup.string().required(),
@@ -32,8 +29,7 @@ const signUpSchema = yup.object().shape({
   addressLine2: yup.string().required(),
   postalCode: yup.string().required(),
   city: yup.string().required(),
-  district:yup.string().required(),
-  postal_code:yup.string().required(),
+  district: yup.string().required(),
   password: yup.string().required().min(8).max(15),
 });
 
@@ -50,7 +46,6 @@ async function getUserDetails(userId) {
 
 async function signin(email, password) {
   try {
-    
     await signInSchema.validate({ email: email, password: password });
   } catch (error) {
     return generateOutput(400, "Validation error", error.message);
@@ -126,22 +121,10 @@ async function forgotPassword(email) {
 
 async function registerUser(values) {
   try {
-  
     await signUpSchema.validate({
-      first_name: values.first_name,
-      last_name: values.last_name,
-      birthday: values.birthday,
-      phone_number: values.phone_number,
-      address_line_1: values.address_line_1,
-      address_line_2: values.address_line_2,
-      email: values.email,
-      city: values.city,
-      district:values.district,
-      postal_code:values.postal_code,
-      password: values.password,
+      ...values,
     });
   } catch (error) {
- 
     return generateOutput(400, "Validation error", error.message);
   }
   try {
@@ -188,16 +171,16 @@ async function registerUser(values) {
           }
           const user = {
             user_id: id,
-            first_name: values.first_name,
-            last_name: values.last_name,
+            first_name: values.firstName,
+            last_name: values.lastName,
             birthday: values.birthday,
-            phone_number: values.phone_number,
-            address_line_1: values.address_line_1,
-            address_line_2:values.address_line_2,
+            phone_number: values.phoneNumber,
+            address_line_1: values.addressLine1,
+            address_line_2: values.addressLine2,
             email: values.email,
             city: values.city,
-            district:values.district,
-            postal_code:values.postal_code,
+            district: values.district,
+            postal_code: values.postalCode,
             password: hash,
           };
           try {
