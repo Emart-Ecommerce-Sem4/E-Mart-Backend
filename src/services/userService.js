@@ -42,6 +42,17 @@ async function getUserDetails(userId) {
   }
 }
 
+async function getUserOrders(userId){
+   try {
+    const res = await userRespository.getUserOrders(userId);
+    return generateOutput(200, "UserOrders fetched succesfully", {
+      userOrders: res.rows,
+    });
+   } catch (error) {
+      return generateOutput(500, "Internal Server Error", error);
+   }
+}
+
 async function signin(email, password) {
   try {
     await signInSchema.validate({ email: email, password: password });
@@ -214,4 +225,4 @@ async function registerUser(values) {
   });
 }
 
-module.exports = { registerUser, signin, forgotPassword, getUserDetails };
+module.exports = {getUserOrders, registerUser, signin, forgotPassword, getUserDetails };

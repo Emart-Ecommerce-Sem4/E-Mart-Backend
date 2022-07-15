@@ -19,10 +19,13 @@ router.post("/signin", async (req, res) => {
   res.send(result);
 });
 
-router.get("/reset-password/:email", async (req, res) => {
-  const result = await userService.forgotPassword(req.params.email);
+router.get("/getuserorders/:ID", async (req, res) => {
+
+  const result = await userService.getUserOrders(req.params.ID);
   res.status(200);
   res.send(result);
 });
+
+
 
 module.exports = router;
