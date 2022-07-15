@@ -180,17 +180,17 @@ async function registerUser(values) {
           }
           const user = {
             user_id: id,
-            first_name: values.firstName,
-            last_name: values.lastName,
+            firstName: values.firstName,
+            lastName: values.lastName,
             birthday: values.birthday,
-            phone_number: values.phoneNumber,
-            address_line_1: values.addressLine1,
-            address_line_2: values.addressLine2,
+            phoneNumber: values.phoneNumber,
+            addressLine1: values.addressLine1,
+            addressLine2: values.addressLine2,
             user_role: "CUSTOMER",
             email: values.email,
             city: values.city,
             district: values.district,
-            postal_code: values.postalCode,
+            postalCode: values.postalCode,
             password: hash,
           };
           try {
