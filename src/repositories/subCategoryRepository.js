@@ -17,9 +17,10 @@ async function getSubCategoriesForParentId(parentId) {
 
 async function getSubCategoryByName(name) {
   try {
-    const res = await pool.query("SELECT * from sub_category WHERE name = $1", [
-      name,
-    ]);
+    const res = await pool.query(
+      "SELECT * from category_subcategory WHERE name = $1",
+      [name]
+    );
     return res;
   } catch (error) {
     throw InternalServerErrorException();

@@ -3,6 +3,30 @@ const {
   InternalServerErrorException,
 } = require("../exceptions/InternalServerErrorException");
 
+async function getProductsForSubCategory(subCategoryId) {
+  try {
+    const res = await pool.query(
+      "SELECT * from product WHERE product_id IN (SELECT DISTINCT product_id FROM product_subcategory WHERE sub_category_id = $1)",
+      [subCategoryId]
+    );
+    return res;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
+
+async function getProductsForCategory(categoryId) {
+  try {
+    const res = await pool.query(
+      "SELECT * from product WHERE product_id IN (SELECT DISTINCT product_id from product_subCategory WHERE sub_category_id IN (SELECT sub_category_id from category_subcategory WHERE category_id = $1))",
+      [categoryId]
+    );
+    return res;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
+
 async function getImagesForProduct(productId) {
   try {
     const res = await pool.query(
@@ -79,4 +103,6 @@ module.exports = {
   getProductById,
   getAllProducts,
   getImagesForProduct,
+  getProductsForCategory,
+  getProductsForSubCategory,
 };
