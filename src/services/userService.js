@@ -42,15 +42,15 @@ async function getUserDetails(userId) {
   }
 }
 
-async function getUserOrders(userId){
-   try {
+async function getUserOrders(userId) {
+  try {
     const res = await userRespository.getUserOrders(userId);
     return generateOutput(200, "UserOrders fetched succesfully", {
       userOrders: res.rows,
     });
-   } catch (error) {
-      return generateOutput(500, "Internal Server Error", error);
-   }
+  } catch (error) {
+    return generateOutput(500, "Internal Server Error", error);
+  }
 }
 
 async function signin(email, password) {
@@ -186,6 +186,7 @@ async function registerUser(values) {
             phone_number: values.phoneNumber,
             address_line_1: values.addressLine1,
             address_line_2: values.addressLine2,
+            user_role: "CUSTOMER",
             email: values.email,
             city: values.city,
             district: values.district,
@@ -225,4 +226,10 @@ async function registerUser(values) {
   });
 }
 
-module.exports = {getUserOrders, registerUser, signin, forgotPassword, getUserDetails };
+module.exports = {
+  getUserOrders,
+  registerUser,
+  signin,
+  forgotPassword,
+  getUserDetails,
+};

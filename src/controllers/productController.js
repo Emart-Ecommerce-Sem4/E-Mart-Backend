@@ -36,12 +36,18 @@ router.get("/all", async (req, res) => {
   res.send(response);
 });
 
-router.post("/add", async (req, res) => {
+router.post("/add", authenticateToken, async (req, res) => {
+  if (req.user.user_role !== "ADMIN") {
+    res.sendStatus(403);
+  }
   const response = await productService.addProduct(req.body);
   res.status(200);
   res.send(response);
 });
-router.put("/update/:ID", async (req, res) => {
+router.put("/update/:ID", authenticateToken, async (req, res) => {
+  if (req.user.user_role !== "ADMIN") {
+    res.sendStatus(403);
+  }
   const data = {
     productId: req.params.ID,
     ...req.body,

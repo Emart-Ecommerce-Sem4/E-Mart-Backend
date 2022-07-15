@@ -21,12 +21,18 @@ router.get("/:id", async (req, res) => {
   res.send(response);
 });
 
-router.post("/add", async (req, res) => {
+router.post("/add", authenticateToken, async (req, res) => {
+  if (req.user.user_role !== "ADMIN") {
+    res.sendStatus(403);
+  }
   const response = await variantService.addVariant(req.body);
   res.status(200);
   res.send(response);
 });
-router.put("/update", async (req, res) => {
+router.put("/update", authenticateToken, async (req, res) => {
+  if (req.user.user_role !== "ADMIN") {
+    res.sendStatus(403);
+  }
   const response = await variantService.updateVariant(req.body);
   res.status(200);
   res.send(response);

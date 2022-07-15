@@ -16,24 +16,32 @@ router.get("/get/:ID", async (req, res) => {
   res.send(result);
 });
 
-router.post("/add", async (req, res) => {
+router.post("/add", authenticateToken, async (req, res) => {
+  if (req.user.user_role !== "ADMIN") {
+    res.sendStatus(403);
+  }
   const result = await categoryService.addCategory(req.body);
   res.status(200);
   res.send(result);
 });
 
 router.put("/update/:ID", authenticateToken, async (req, res) => {
+  if (req.user.user_role !== "ADMIN") {
+    res.sendStatus(403);
+  }
   const data = {
     categoryId: req.params.ID,
     categoryName: req.body.categoryName,
   };
-  console.log(data);
   const result = await categoryService.updateCategory(data);
   res.status(200);
   res.send(result);
 });
 
 router.delete("/:ID", authenticateToken, async (req, res) => {
+  if (req.user.user_role !== "ADMIN") {
+    res.sendStatus(403);
+  }
   const result = await categoryService.deleteCategory(req.params.ID);
   res.status(200);
   res.send(result);

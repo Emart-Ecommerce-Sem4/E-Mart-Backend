@@ -14,7 +14,7 @@ async function getCustomerDetails(customerId) {
 async function getUser(email) {
   try {
     const res = await pool.query(
-      "SELECT * FROM  user_account   WHERE email = $1",
+      "SELECT * FROM  user_account WHERE email = $1",
       [email]
     );
     return res;
@@ -79,4 +79,4 @@ async function registerUser(user) {
   }
 }
 
-module.exports = { getUserOrders,registerUser, getUser, getCustomerDetails };
+module.exports = { getUserOrders, registerUser, getUser, getCustomerDetails };
