@@ -156,7 +156,7 @@ async function getSubCategoruAccordingToCategory(category_id){
     var result =[]
     try {
       
-      const  res  = await pool.query("select max_values.category_name, max(max_values.sales),max_values.percentage from (select category_name, sum(total_price) as sales,round((total_price/sum(total_price))*100) as percentage  from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by category_name,total_price) as max_values group by category_name,percentage",['DELIVERED',year,fromMonth,toMonth] )
+      const  res  = await pool.query("select max_values.category_name, max(max_values.sales),max_values.percentage from (select category_name, sum(total_price) as sales, round(sum(total_price)*100/(select sum(total_price) from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 )) as percentage   from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by category_name) as max_values group by category_name,percentage order by max(max_values.sales) desc limit 1",['DELIVERED',year,fromMonth,toMonth] )
       res.rows.forEach(element => {
         result.push(element);
       });
@@ -168,7 +168,7 @@ async function getSubCategoruAccordingToCategory(category_id){
 
     try {
       
-      const  res  = await pool.query("select max_values.title, max(max_values.sales),max_values.percentage  from (select title, sum(total_price) as sales,(total_price*100/sum(total_price)) as percentage from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by title,total_price) as max_values group by title,percentage",['DELIVERED',year,fromMonth,toMonth] )
+      const  res  = await pool.query("select max_values.title, max(max_values.sales),max_values.percentage  from (select title, sum(total_price) as sales, round(sum(total_price)*100/(select sum(total_price) from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 )) as percentage   from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by title) as max_values group by title,percentage order by max(max_values.sales) desc limit 1",['DELIVERED',year,fromMonth,toMonth] )
       res.rows.forEach(element => {
         result.push(element);
       });
@@ -178,8 +178,7 @@ async function getSubCategoruAccordingToCategory(category_id){
       throw new InternalServerErrorException();
     }
     try {
-      
-      const  res  = await pool.query("select max_values.name, max(max_values.sales),max_values.percentage  from (select name, sum(total_price) as sales,round((total_price/sum(total_price))*100) as percentage from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by name,total_price) as max_values group by name,percentage",['DELIVERED',year,fromMonth,toMonth] )
+      const  res  = await pool.query("select max_values.name, max(max_values.sales),max_values.percentage  from (select name, sum(total_price) as sales, round(sum(total_price)*100/(select sum(total_price) from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 )) as percentage   from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by name) as max_values group by name,percentage order by max(max_values.sales) desc limit 1",['DELIVERED',year,fromMonth,toMonth] )
       res.rows.forEach(element => {
         result.push(element);
       });
@@ -190,8 +189,7 @@ async function getSubCategoruAccordingToCategory(category_id){
     }
 
     try {
-      
-      const  res  = await pool.query("select  max_values.variant_type, max(max_values.sales),max_values.percentage  from (select variant_type, sum(total_price) as sales,round((total_price/sum(total_price))*100) as percentage from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by variant_type,total_price) as max_values group by variant_type,percentage",['DELIVERED',year,fromMonth,toMonth] )
+      const  res  = await pool.query("select  max_values.variant_type, max(max_values.sales),max_values.percentage  from (select variant_type, sum(total_price) as sales, round(sum(total_price)*100/(select sum(total_price) from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 )) as percentage   from full_product_order_view  where order_status=$1 AND date_part('year',order_date)=$2 and date_part('month',order_date) between $3 and $4 group by variant_type) as max_values group by variant_type,percentage order by max(max_values.sales) desc limit 1",['DELIVERED',year,fromMonth,toMonth] )
       res.rows.forEach(element => {
         result.push(element);
       });
