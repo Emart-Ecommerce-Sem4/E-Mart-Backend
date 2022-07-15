@@ -12,8 +12,6 @@ const productAddSchema = yup.object().shape({
   title: yup.string().required().max(50),
   weight: yup.number().required(),
   sku: yup.string().required(),
-  categoryId: yup.string().required(),
-  subCategoryId: yup.string().required(),
 });
 
 async function getProductsForSubCategory(subCategoryId) {
@@ -94,11 +92,6 @@ async function addProduct(values) {
   };
   try {
     const result = await productRepository.addProduct(product);
-    const resultImages = await imageRepository.addImagesToProduct(
-      product.id,
-      values.images
-    );
-
     return generateOutput(201, "Product Added Succesfully", {
       product: product,
     });

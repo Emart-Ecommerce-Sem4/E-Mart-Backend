@@ -168,7 +168,7 @@ BEGIN
     loop
         if available_quantity >= f.item_count then
             UPDATE user_orders SET order_status = 'PLACED' WHERE order_id = f.order_id;
-            UPDATE variant SET quantity_in_stock = quantity_in_stock - f.item_count;
+            UPDATE variant SET quantity_in_stock = quantity_in_stock - f.item_coun WHERE variant_id = variantId;
             available_quantity = available_quantity - f.item_count;
         end if;
     end loop;

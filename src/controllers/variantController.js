@@ -3,6 +3,12 @@ const variantService = require("../services/variantService");
 const authenticateToken = require("../middlewares/authorization");
 const router = express.Router();
 
+router.get("/order/product/:id", async (req, res) => {
+  const response = await variantService.getProductFromVariant(req.params.id);
+  res.status(200);
+  res.send(response);
+});
+
 router.get("/product/:id", async (req, res) => {
   const response = await variantService.getVarientsForProductId(req.params.id);
   res.status(200);

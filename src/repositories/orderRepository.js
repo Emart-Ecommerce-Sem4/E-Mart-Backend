@@ -77,9 +77,6 @@ async function getOrdersAccordingToStatus(status) {
 
 async function addOrder(values) {
   try {
-
-    
-
     if (values.orderStatus === "PLACED") {
       await pool.query("BEGIN");
     }

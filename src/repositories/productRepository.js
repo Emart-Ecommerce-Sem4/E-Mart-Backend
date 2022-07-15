@@ -50,18 +50,28 @@ async function getAllProducts() {
 
 async function addProduct(values) {
   try {
-    const res = await pool.query(
-      "INSERT INTO product VALUES ($1,$2,$3,$4,$5,$6)",
-      [
-        values.id,
-        values.title,
-        values.weight,
-        values.sku,
-        values.categoryId,
-        values.subCategoryId,
-      ]
-    );
+    await pool.query("BEGIN");
+    const res = await pool.query("INSERT INTO product VALUES ($1,$2,$3,$4)", [
+      values.id,
+      values.title,
+      values.weight,
+      values.sku,
+    ]);
+    for (image of values.images) {
+      const res3 = await pool.query(
+        "INSERT INTO product_images VALUES ($1,$2)",
+        [values.id, image]
+      );
+    }
+    for (category of values.subCategories) {
+      const res2 = await pool.query(
+        "INSERT INTO product_subcategory VALUES ($1,$2)",
+        [values.id, category]
+      );
+    }
+    await pool.query("COMMIT");
   } catch (error) {
+    await pool.query("ROLLBACK");
     console.log(error);
     throw new InternalServerErrorException();
   }
