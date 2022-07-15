@@ -23,6 +23,17 @@ async function getUser(email) {
   }
 }
 
+async function getUserOrders(userId) {
+  try {
+    const res = await pool.query(
+      "SELECT * FROM  full_product_order_view   WHERE user_id = $1 order by order_date desc",
+      [userId]
+    );
+    return res;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
 async function registerUser(user) {
   const {
     user_id,
@@ -58,4 +69,4 @@ async function registerUser(user) {
   }
 }
 
-module.exports = { registerUser, getUser, getCustomerDetails };
+module.exports = { getUserOrders,registerUser, getUser, getCustomerDetails };

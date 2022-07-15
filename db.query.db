@@ -149,10 +149,9 @@ CREATE TABLE product_images (
 
 //views
 
-create view full_product_order_view as select c.category_name,s.name,p.title,v.variant_type,u.order_id,u.order_date,u.total_price,u.order_status,u.delivery_method from user_orders u left outer join variant v on u.variant_id=v.variant_id left outer join product p on p.product_id=v.product_id left outer join  product_subcategory ps on ps.product_id=p.product_id left outer join  sub_category s on s.sub_category_id=ps.sub_category_id left outer join category_subcategory cs on cs.sub_category_id=s.sub_category_id left outer join  category c on c.category_id=cs.category_id
+create view full_product_order_view as select c.category_name,s.name,p.title,v.variant_type,u.order_id,u.payment_method,u.delivery_id,u.order_date,u.total_price,u.item_count,u.dispatched_date,u.user_idu.order_status,u.delivery_method from user_orders u left outer join variant v on u.variant_id=v.variant_id left outer join product p on p.product_id=v.product_id left outer join  product_subcategory ps on ps.product_id=p.product_id left outer join  sub_category s on s.sub_category_id=ps.sub_category_id left outer join category_subcategory cs on cs.sub_category_id=s.sub_category_id left outer join  category c on c.category_id=cs.category_id
 
 
-create view full_product_order_view as select c.category_name,s.name,p.title,v.variant_type,u.order_id,u.order_date,u.total_price,u.order_status,u.delivery_method from user_orders u left outer join variant v on u.variant_id=v.variant_id left outer join product p on p.product_id=v.product_id left outer join sub_category s on s.sub_category_id=p.sub_category_id left outer join category c on c.category_id=s.category_id
 
 
 CREATE OR REPLACE FUNCTION check_orders(variantId text) 
