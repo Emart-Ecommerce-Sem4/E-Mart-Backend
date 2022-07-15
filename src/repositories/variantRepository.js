@@ -26,6 +26,19 @@ async function getVaraintByType(type) {
     throw new InternalServerErrorException();
   }
 }
+
+async function getProductFromVariant(id) {
+  try {
+    const res = await pool.query(
+      "SELECT * from product WHERE product_id = (SELECT product_id FROM variant WHERE variant_id = $1)",
+      [id]
+    );
+    return res;
+  } catch (error) {
+    throw new InternalServerErrorException();
+  }
+}
+
 async function getVaraintById(ID) {
   try {
     const res = await pool.query(
@@ -83,4 +96,5 @@ module.exports = {
   getVaraintById,
   updateVariant,
   getVarientsForProduct,
+  getProductFromVariant,
 };
