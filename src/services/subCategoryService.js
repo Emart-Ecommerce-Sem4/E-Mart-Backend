@@ -30,16 +30,7 @@ async function addSubCategory(values) {
   } catch (error) {
     return generateOutput(400, "Validation Error!", error.errors);
   }
-  try {
-    const res = await subCategoryRepository.getSubCategoryByName(values.name);
-    if (res.rowCount !== 0) {
-      return generateOutput(400, "Sub Category Already Exists", {
-        cateogry: res.rows[0],
-      });
-    }
-  } catch (error) {
-    return generateOutput(400, "Error in reading the database", error);
-  }
+
   const category = {
     sub_category_id: uuid.v4(),
     ...values,
