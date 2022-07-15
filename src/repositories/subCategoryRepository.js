@@ -29,13 +29,21 @@ async function getSubCategoryByName(name) {
 
 async function addSubCategory(values) {
   try {
-    const res = await pool.query("INSERT INTO sub_category VALUES ($1,$2,$3)", [
+    await pool.query("BEGIN");
+    const res1 = await pool.query("INSERT INTO sub_category VALUES ($1,$2)", [
       values.sub_category_id,
-      values.categoryId,
       values.name,
     ]);
+    const res2 = await pool.query(
+      "INSERT INTO category_subcategory VALUES ($1,$2)",
+      [values.categoryId, values.sub_category_id]
+    );
+
+    await pool.query("COMMIT");
     return true;
   } catch (error) {
+    await pool.query("ROLLBACK");
+    console.log(error);
     throw InternalServerErrorException();
   }
 }
