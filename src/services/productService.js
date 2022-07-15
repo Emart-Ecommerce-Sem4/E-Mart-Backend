@@ -53,9 +53,7 @@ async function getProduct(id) {
   try {
     const res = await productRepository.getProductById(id);
     if (res.rowCount) {
-      const imageRes = await imageRepository.getAllImagesOfProduct(
-        res.rows[0]?.product_id
-      );
+      const imageRes = await imageRepository.getAllImagesOfProduct(id);
       return generateOutput(200, "Product fetched succesfully!", {
         product: { ...res.rows[0], images: imageRes.rows },
       });

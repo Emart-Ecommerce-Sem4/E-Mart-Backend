@@ -78,10 +78,15 @@ async function signin(email, password) {
         if (isMatch) {
           const userObj = { ...user, ...userDetails.rows[0] };
           delete userObj.password;
+          const userData = {
+            user_id: userObj?.user_id,
+            user_role: userObj?.user_role,
+            email: userObj?.email,
+          };
           resolve(
             generateOutput(200, "User succesfully signin!", {
               user: { ...userObj },
-              token: generateAccessToken(user),
+              token: generateAccessToken(userData),
             })
           );
         } else {
@@ -196,10 +201,15 @@ async function registerUser(values) {
           try {
             await userRespository.registerUser(user);
             delete user.password;
+            const userObj = {
+              user_id: id,
+              email: values.email,
+              user_role: "CUSTOMER",
+            };
             resolve(
               generateOutput(201, "User created sucessfully!", {
                 user: user,
-                token: generateAccessToken(user),
+                token: generateAccessToken(userObj),
               })
             );
           } catch (error) {
