@@ -1,0 +1,176 @@
+CREATE TABLE  user_account (
+    user_id VARCHAR(50) PRIMARY KEY ,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    user_role VARCHAR (50),
+    check (user_role in ('ADMIN','CUSTOMER'))
+);
+
+CREATE TABLE customer (
+                       user_id VARCHAR(50) PRIMARY KEY,
+                       first_name VARCHAR(255) NOT NULL, 
+                       last_name VARCHAR(255) NOT NULL,
+                       birthday DATE NOT NULL,
+                       phone_number VARCHAR(20) NOT NULL,
+                       address_line_1 VARCHAR(255) NOT NULL,
+                       address_line_2 VARCHAR(255) NOT NULL,
+                       city VARCHAR(255) NOT NULL,
+                       postal_code VARCHAR(50),
+                       district VARCHAR(50) NOT NULL,
+                       created_at TIMESTAMP default current_timestamp,
+                    FOREIGN KEY (user_id)
+                        REFERENCES user_account (user_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+);
+
+
+CREATE TABLE  category(
+    category_id VARCHAR(50) PRIMARY KEY ,
+    category_name VARCHAR(50) NOT NULL  ,
+    created_at TIMESTAMP default current_timestamp
+);
+
+CREATE TABLE sub_category(
+                        sub_category_id VARCHAR(50) PRIMARY KEY,
+                        category_id VARCHAR(50),
+                        name VARCHAR(50),
+                        created_at TIMESTAMP default current_timestamp,
+                        FOREIGN KEY (category_id)
+                            REFERENCES category (category_id)
+                            ON DELETE CASCADE
+                            ON UPDATE CASCADE
+);
+
+
+CREATE TABLE  product (
+    product_id VARCHAR(50) PRIMARY KEY ,
+    title VARCHAR(50) NOT NULL,
+    weight NUMERIC(10,2),
+    sku VARCHAR(50),
+    category_id VARCHAR(50) NOT NULL,
+    
+    created_at TIMESTAMP default current_timestamp,
+    FOREIGN KEY (sub_category_id)
+                        REFERENCES sub_category (sub_category_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,
+    FOREIGN KEY (category_id)
+                        REFERENCES category (category_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+);
+
+CREATE TABLE product_subcategory(
+     product_id VARCHAR(50) NOT NULL,
+     sub_category_id VARCHAR(50) NOT NULL,
+     PRIMARY KEY(product_id,sub_category_id),
+     FOREIGN KEY (product_id)
+                        REFERENCES product (product_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,
+    FOREIGN KEY (sub_category_id)
+                        REFERENCES sub_category (sub_category_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+);
+CREATE TABLE category_subcategory(
+     category_id VARCHAR(50) NOT NULL,
+     sub_category_id VARCHAR(50) NOT NULL,
+     PRIMARY KEY(category_id,sub_category_id),
+     FOREIGN KEY (category_id)
+                        REFERENCES category (category_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,
+    FOREIGN KEY (sub_category_id)
+                        REFERENCES sub_category (sub_category_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+);
+);
+CREATE TABLE  variant(
+    variant_id VARCHAR(50) PRIMARY KEY ,
+    product_id VARCHAR(50),
+    description TEXT,
+    variant_type VARCHAR(50),
+    quantity_in_stock INTEGER NOT NULL,
+    unit_price NUMERIC(10,2),
+    created_at TIMESTAMP default current_timestamp,
+    FOREIGN KEY (product_id)
+        REFERENCES product (product_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+    
+);
+
+
+CREATE TABLE user_orders (
+                       order_id VARCHAR(50) PRIMARY KEY,
+                       user_id VARCHAR(50) NOT NULL, 
+                       variant_id VARCHAR(50) NOT NULL,
+                       order_date DATE NOT NULL,
+                       item_count INTEGER NOT NULL,
+                       delivery_method VARCHAR(50) NOT NULL,
+                       order_status VARCHAR(30) NOT NULL,
+                       comments VARCHAR(255),
+                       dispatched_date DATE,
+                       payment_method VARCHAR(30) NOT NULL,
+                       delivery_id VARCHAR(50),
+                       total_price numeric(10,2),
+                       created_at TIMESTAMP default current_timestamp,
+                    FOREIGN KEY (user_id)
+                        REFERENCES user_account (user_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,   
+                    FOREIGN KEY (variant_id)
+                        REFERENCES variant (variant_id)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,   
+                    check (order_status in ('PENDING','PLACED','SHIPPED','DELIVERED','REJECTED','REFUNDED')),
+                    check (payment_method in ('CASH_ON_DELIVERY','CARD_PAYMENT','CASH_PAYMENT')),
+                    check (delivery_method in ('STORE_PICKUP','DELIVERY'))               
+);
+
+
+CREATE TABLE product_images (
+                        product_id VARCHAR(50),
+                        image VARCHAR(255),
+                        PRIMARY KEY (product_id,image),
+                        created_at TIMESTAMP default current_timestamp,
+                        FOREIGN KEY (product_id)
+                            REFERENCES product (product_id)
+                            ON DELETE CASCADE
+                            ON UPDATE CASCADE
+);
+
+
+
+
+
+//views
+
+create view full_product_order_view as select c.category_name,s.name,p.title,v.variant_type,u.order_id,u.payment_method,u.delivery_id,u.order_date,u.total_price,u.item_count,u.dispatched_date,u.user_idu.order_status,u.delivery_method from user_orders u left outer join variant v on u.variant_id=v.variant_id left outer join product p on p.product_id=v.product_id left outer join  product_subcategory ps on ps.product_id=p.product_id left outer join  sub_category s on s.sub_category_id=ps.sub_category_id left outer join category_subcategory cs on cs.sub_category_id=s.sub_category_id left outer join  category c on c.category_id=cs.category_id
+
+
+
+
+CREATE OR REPLACE FUNCTION check_orders(variantId text) 
+RETURNS void
+LANGUAGE plpgsql as $$
+DECLARE
+    f record;
+    available_quantity int;
+BEGIN
+    select quantity_in_stock into available_quantity FROM variant WHERE variant_id = variantId;
+    for f in select order_id,item_count from user_orders
+        where variant_id = variantId AND order_status = 'PENDING'
+    loop
+        if available_quantity >= f.item_count then
+            UPDATE user_orders SET order_status = 'PLACED' WHERE order_id = f.order_id;
+            UPDATE variant SET quantity_in_stock = quantity_in_stock - f.item_coun WHERE variant_id = variantId;
+            available_quantity = available_quantity - f.item_count;
+        end if;
+    end loop;
+END;
+$$;
+
